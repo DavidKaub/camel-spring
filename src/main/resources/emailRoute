@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:p="http://www.springframework.org/schema/p" xmlns:c="http://www.springframework.org/schema/c"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:camel="http://camel.apache.org/schema/spring"
+       xsi:schemaLocation="
+  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd">
+
+    <routeContext id="simpleEmailRoute" xmlns="http://camel.apache.org/schema/spring">
+
+              <route id="emailRoute">
+            <from uri="file:C:/inputFolder?move=./done"/>
+            <log message="Routing message from inbox to outbox via email with ${body}"/>
+            <setHeader headerName="Subject">
+                <constant>Betreff Name</constant>
+            </setHeader>
+            <to uri="smtps://smtp.gemail.com:587?username=email@gmail.com&amp;password=SnoopyDasIstDasPasswort&amp;to=empfaengerEmailAdresse"/>
+        </route>
+
+    </routeContext>
+
+</beans>
+
+
+
+
+
+
+
