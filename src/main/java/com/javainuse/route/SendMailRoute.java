@@ -12,6 +12,9 @@ public class SendMailRoute extends RouteBuilder {
                 .process(new MyProcessor())
                 .bean(new MyTransformer(), "TransformContext")
                 .process(new MyProcessor())
-                .to("smtp://localhost:587?username=email2&password=apfelmusmann&to=email2@localhost");
+                //.to("smtps://smtp.gmail.com:465?username=sudokusolver2019@gmail.com&password=#sudokuSolver2019&to=sudokusolver2019@gmail.com");
+                //.to("smtp://localhost:25?username=email2&password=apfelmusmann&to=email2@localhost");
+                .to("smtp://192.168.178.42:587?username=email1@localhost&password=apfelmusmann&to=email1@localhost");
+        //&debugMode=true
     }
 }
