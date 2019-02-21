@@ -10,7 +10,7 @@ public class ReceiveMailRoute  extends RouteBuilder{
         public void configure() throws Exception {
             //from("imaps://imap.gmail.com:993?username=sudokusolver2019&password=#sudokuSolver2019")//"file:C:/inputFolder?move=./done"
             //from("imap://localhost:143?username=email2&password=apfelmusmann")//"file:C:/inputFolder?move=./done"
-            from("imap://192.168.178.42:143?username=email1&password=apfelmusmann&delay=5")//"file:C:/inputFolder?move=./done"
+            from("imap://136.199.13.190:143?username=email1&password=apfelmusmann&delay=5")//"file:C:/inputFolder?move=./done"
                     //&debugMode=true
                     .process(new MyProcessor())
                     .bean(new MyTransformer(), "TransformContext")
