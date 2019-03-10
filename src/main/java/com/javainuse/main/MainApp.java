@@ -6,6 +6,9 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class MainApp {
 
     public static void main(String[] args) {
+
+
+
         AbstractApplicationContext sendMailContext = new ClassPathXmlApplicationContext("applicationContext-camel.xml");
         AbstractApplicationContext receiveMailContext = new ClassPathXmlApplicationContext("applicationContext-receiveEmail.xml");
         sendMailContext.start();
@@ -21,5 +24,6 @@ public class MainApp {
         receiveMailContext.stop();
         sendMailContext.close();
         receiveMailContext.close();
+
     }
 }
