@@ -8,7 +8,7 @@ import sudoku.solver.EmailHandler;
 
 public class MainApp {
 
-    private static String emailAdress = "";
+    private static String emailAdress = "sudokusolver2019@gmail.com";
     private static String imapServer = "imap.gmail.com";
     private static int imapPort = 993;
     private static String imapUsername = "sudokusolver2019";
@@ -52,16 +52,20 @@ public class MainApp {
          */
 
 
-        String boxName = "TODO";
-        String initialValues = "TODO";
+        String boxName = "A1";
+        String initialValues = "00:2, 10:8, 12:7, 21:5, 22:9";
         EmailBox sudokuBox = new EmailBox(boxName,initialValues);
         EmailHandler emailHandler = new EmailHandler(sudokuBox,emailAdress, imapServer,imapPort,imapUsername,smtpServer,smptPort,smtpUsername,password);
         emailHandler.start();
 
+
+
+
         /**
          * 3. Start MQTT / Email Routes
-         * 4. Send OK TO BoxManager -> best case by email via camel
+         * 4. Send OK TO BoxManager -> done by box via email!
          */
+        //TODO create MQTT and Rest to Email route
 
 
 
