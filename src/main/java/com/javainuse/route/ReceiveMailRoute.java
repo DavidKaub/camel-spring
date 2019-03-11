@@ -13,7 +13,7 @@ public class ReceiveMailRoute extends RouteBuilder{
             //from("imap://192.168.178.42:143?username=email1&password=apfelmusmann&delay=5")//"file:C:/inputFolder?move=./done"
                     //&debugMode=true
                     .process(new MyProcessor())
-                    .bean(new MyTransformer(), "TransformContext")
+                    //.bean(new MyTransformer(), "TransformContext")
                     .process(new MyProcessor())
                     .to("file:C:/mailOutputFolder");
         }

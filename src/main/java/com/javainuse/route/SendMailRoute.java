@@ -10,7 +10,7 @@ public class SendMailRoute extends RouteBuilder {
     public void configure() throws Exception {
         from("file:C:/mailInputFolder?move=./done")
                 .process(new MyProcessor())
-                .bean(new MyTransformer(), "TransformContext")
+                //.bean(new MyTransformer(), "TransformContext")
                 .process(new MyProcessor())
                 .to("smtps://smtp.gmail.com:465?username=sudokusolver2019@gmail.com&password=#sudokuSolver2019&to=sudokusolver2019@gmail.com");
                 //.to("smtp://localhost:25?username=email2&password=apfelmusmann&to=email2@localhost");
