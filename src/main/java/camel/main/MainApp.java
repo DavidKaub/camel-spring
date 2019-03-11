@@ -24,22 +24,20 @@ public class MainApp {
         int minutesToRunUntilAutoStop = 10;
         /**
          * TODO:
-         * 1. Start releveant routes
-         * 2. Send Message to BoxManager
-         *  Question: create Box before or after receiving initial values? after is much easier
+         * 1. Send Message to BoxManager
+         * 2. Initialize Box
          */
         String boxName = "TODO";
         String initialValues = "TODO";
-
-
-
-
-
-
         EmailBox sudokuBox = new EmailBox(boxName,initialValues);
         EmailHandler emailHandler = new EmailHandler(sudokuBox,emailAdress, imapServer,imapPort,imapUsername,smtpServer,smptPort,smtpUsername,password);
         emailHandler.start();
-        //TODO send ready to boxManager -> best case by email
+
+        /**
+         * 3. Start MQTT / Email Routes
+         * 4. Send OK TO BoxManager -> best case by email via camel
+         */
+
 
 
 
