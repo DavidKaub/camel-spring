@@ -27,6 +27,31 @@ public class MainApp {
          * 1. Send Message to BoxManager
          * 2. Initialize Box
          */
+
+
+        /**
+         * the following has to be implemented in Camel!!
+         *
+         *
+         * do initial stuff - retrieve boxName, boxValue ip for MQTT
+         * TODO establish connection to boxManager retrieve and set initial values and boxName to SudokuBox sudokuBox
+         * Initiale Nachricht an den Manager
+         * Box erfragt alle relevanten Parameter:
+         * http://<SpringBoxManager>/api/initalize
+         * Der Manager sendet in diesem Fall folgende Nachricht zurück:
+         * {
+         * "mqtt-ip" : a.b.c.d,
+         * "mqtt-port" : 42,
+         * "box" : "sudoko/box_a4",
+         * "init" : [
+         * { "21" : 5 },
+         * { "01" : 7 }
+         * ]
+         * }
+         *
+         */
+
+
         String boxName = "TODO";
         String initialValues = "TODO";
         EmailBox sudokuBox = new EmailBox(boxName,initialValues);

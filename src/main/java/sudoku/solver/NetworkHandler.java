@@ -1,9 +1,6 @@
 package sudoku.solver;
 
-
-
 import sudoku.lib.MyDebugger;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
@@ -29,58 +26,44 @@ abstract class NetworkHandler extends Thread {
         this.sudokuBox = sudokuBox;
         this.boxName = sudokuBox.getBoxName();
         sudokuSheet = new int[10][10];
+        establishConnectionToManager();
     }
 
 
-    @Override
-    public void run() {
-        try {
-            Thread.sleep(300);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        while (true) {
 
-            /**
-             * 1. Read messages from all incoming connections
-             * 3. feed the box with the new knowledge
-             *      b. this means also processing the boxes solving algorithm and retrieving new knowledge
-
-             */
-            if (!sudokuBox.isSolved()) {
-                if (lockForIncomingMessages.tryLock()) {
-                    // Got the lock
-                    try {
-                        for (String message : incomingMessages) {
-                            // give message to box
-                            sudokuBox.receiveKnowledge(message);
-                        }
-                        incomingMessages.clear();
-
-                    } finally {
-                        // Make sure to unlock so that we don't cause a deadlock
-                        lockForIncomingMessages.unlock();
+    void messageProcessing(){
+        if (!sudokuBox.isSolved()) {
+            if (lockForIncomingMessages.tryLock()) {
+                // Got the lock
+                try {
+                    for (String message : incomingMessages) {
+                        // give message to box
+                        sudokuBox.receiveKnowledge(message);
                     }
-                }else {
-                    noLockNotification();
+                    incomingMessages.clear();
+
+                } finally {
+                    // Make sure to unlock so that we don't cause a deadlock
+                    lockForIncomingMessages.unlock();
                 }
-            } else if (!sentSolvedMessage) {
-                sendIsSolved();
+            }else {
+                noLockNotification();
             }
-            sendPendingMessages();
-            try {
-                /**
-                 * TODO why does the system not work if the thread is not sleeping here for a certain time (1 ms does not work)???
-                 *
-                 * NOTE: 10 ms seams to work but 100ms is much faster!!! probably gets even more important when using real
-                 * network and not localhost
-                 */
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        } else if (!sentSolvedMessage) {
+            sendIsSolved();
         }
+        sendPendingMessages();
+        /**
+         * TODO why does the system not work if the thread is not sleeping here for a certain time (1 ms does not work)???
+         *
+         * NOTE: 10 ms seams to work but 100ms is much faster!!! probably gets even more important when using real
+         * network and not localhost
+         */
     }
+
+
+
+
 
 
 
@@ -91,7 +74,7 @@ abstract class NetworkHandler extends Thread {
 
 
     protected void addIncomingMessage(String message) {
-        //MyDebugger.__("received incoming message: " + message + " from neighbor", this);
+        //Debugger.__("received incoming message: " + message + " from neighbor", this);
         if (!sudokuBox.isSolved()) {
 
             if (lockForIncomingMessages.tryLock()) {
@@ -118,7 +101,7 @@ abstract class NetworkHandler extends Thread {
     }
 
     protected void addOutgoingMessage(String message) {
-        // MyDebugger.__("received outgoing message: " + message + " from box", this);
+        // Debugger.__("received outgoing message: " + message + " from box", this);
 
 
         if (lockForOutgoingMessages.tryLock()) {
@@ -176,6 +159,7 @@ abstract class NetworkHandler extends Thread {
     abstract void sendIsSolved();
 
     protected void noLockNotification(){
+        MyDebugger.__("DIDNT GET THE LOCK!!!!!",this);
         MyDebugger.__("DIDNT GET THE LOCK!!!!!",this);
         MyDebugger.__("DIDNT GET THE LOCK!!!!!",this);
         MyDebugger.__("DIDNT GET THE LOCK!!!!!",this);
