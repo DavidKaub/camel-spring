@@ -1,6 +1,8 @@
 package sudoku.solver;
 
-import lib.Debugger;
+
+
+import sudoku.lib.MyDebugger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +29,6 @@ abstract class NetworkHandler extends Thread {
         this.sudokuBox = sudokuBox;
         this.boxName = sudokuBox.getBoxName();
         sudokuSheet = new int[10][10];
-        establishConnectionToManager();
     }
 
 
@@ -90,7 +91,7 @@ abstract class NetworkHandler extends Thread {
 
 
     protected void addIncomingMessage(String message) {
-        //Debugger.__("received incoming message: " + message + " from neighbor", this);
+        //MyDebugger.__("received incoming message: " + message + " from neighbor", this);
         if (!sudokuBox.isSolved()) {
 
             if (lockForIncomingMessages.tryLock()) {
@@ -117,7 +118,7 @@ abstract class NetworkHandler extends Thread {
     }
 
     protected void addOutgoingMessage(String message) {
-        // Debugger.__("received outgoing message: " + message + " from box", this);
+        // MyDebugger.__("received outgoing message: " + message + " from box", this);
 
 
         if (lockForOutgoingMessages.tryLock()) {
@@ -175,13 +176,12 @@ abstract class NetworkHandler extends Thread {
     abstract void sendIsSolved();
 
     protected void noLockNotification(){
-        Debugger.__("DIDNT GET THE LOCK!!!!!",this);
-        Debugger.__("DIDNT GET THE LOCK!!!!!",this);
-        Debugger.__("DIDNT GET THE LOCK!!!!!",this);
-        Debugger.__("DIDNT GET THE LOCK!!!!!",this);
-        Debugger.__("DIDNT GET THE LOCK!!!!!",this);
-        Debugger.__("DIDNT GET THE LOCK!!!!!",this);
-        Debugger.__("DIDNT GET THE LOCK!!!!!",this);
+        MyDebugger.__("DIDNT GET THE LOCK!!!!!",this);
+        MyDebugger.__("DIDNT GET THE LOCK!!!!!",this);
+        MyDebugger.__("DIDNT GET THE LOCK!!!!!",this);
+        MyDebugger.__("DIDNT GET THE LOCK!!!!!",this);
+        MyDebugger.__("DIDNT GET THE LOCK!!!!!",this);
+        MyDebugger.__("DIDNT GET THE LOCK!!!!!",this);
     }
 
 

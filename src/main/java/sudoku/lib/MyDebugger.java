@@ -3,7 +3,7 @@ package sudoku.lib;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class Debugger {
+public class MyDebugger {
     private static boolean verbose = true;
     private static boolean verboseBox = false;
     private static boolean verboseCell = false;

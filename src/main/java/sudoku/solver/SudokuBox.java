@@ -2,7 +2,7 @@ package sudoku.solver;
 
 
 
-import sudoku.lib.Debugger;
+import sudoku.lib.MyDebugger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +25,8 @@ abstract class SudokuBox {
 
     public SudokuBox() {
         initializeCells();
-        Debugger.__("initialized!", this);
-        Debugger.__(this.toString(), this);
+        MyDebugger.__("initialized!", this);
+        MyDebugger.__(this.toString(), this);
         fireLocalUpdate();
         sendInitialState();
     }
@@ -68,7 +68,7 @@ abstract class SudokuBox {
                 }
             }
             if (unusedValues.size() == 0) {
-                Debugger.__(getBoxName() + " is solved!", this);
+                MyDebugger.__(getBoxName() + " is solved!", this);
                 this.isSolved = true;
             }
         }
@@ -77,16 +77,16 @@ abstract class SudokuBox {
 
     public void receiveCellUpdate(SudokuCell cell) {
         if (!isSolved) {
-            Debugger.__("local update received", this);
+            MyDebugger.__("local update received", this);
             if (cell.isSolved() && unusedValues.contains(cell.getValue())) {
-                Debugger.__(boxName + " found new value at cell " + cell.getGlobalCellName() + " value = " + cell.getValue(), this);
+                MyDebugger.__(boxName + " found new value at cell " + cell.getGlobalCellName() + " value = " + cell.getValue(), this);
                 removeAvailableValueFromBox(cell.getValue());
                 /**
                  * informiere alle zellen die noch nicht geloesst sind darüber, dass der wert nicht mehr verfügbar ist
                  */
                 fireLocalUpdate();
                 sendNewKnowledgeToNeighbors(cell);
-                Debugger.__(this.toString(), this);
+                MyDebugger.__(this.toString(), this);
             }
         }
     }
@@ -97,7 +97,7 @@ abstract class SudokuBox {
     }
 
     private void sendNewKnowledgeToNeighbors(String message) {
-        Debugger.__("Sending new value to all neighbors: " + message, this);
+        MyDebugger.__("Sending new value to all neighbors: " + message, this);
         networkHandler.addOutgoingMessage(message);
     }
 
@@ -109,7 +109,7 @@ abstract class SudokuBox {
     }
 
     private void addConstraintToAllCells(int value) {
-        Debugger.__("adding constraint " + value + " to all cells", this);
+        MyDebugger.__("adding constraint " + value + " to all cells", this);
         for (int i = 0; i < boxCells.length; i++) {
             for (int j = 0; j < boxCells[i].length; j++) {
                 boxCells[i][j].addNewConstraint(value);
@@ -160,7 +160,7 @@ abstract class SudokuBox {
         if (!CellChecker.checkAbsoluteKnowledge(message)) {
             Exception exception = new IllegalArgumentException("INVALID KNOWLEDGE RECEIVED");
         } else {
-            Debugger.__("receiving new knowledge: " + message, this);
+            MyDebugger.__("receiving new knowledge: " + message, this);
 
             StringTokenizer strokenizer = new StringTokenizer(message, ":");
             String cell = strokenizer.nextToken();
@@ -174,7 +174,7 @@ abstract class SudokuBox {
 
             //TODO Pürfe diese Methoden bzw die schleifen!
             if (checkIfColumnIsWithinBounderies(column)) {
-                Debugger.__("knowledge is relevant for column", this);
+                MyDebugger.__("knowledge is relevant for column", this);
                 forCol = true;
                 int locCol = column - this.column;
                 for (int i = 0; i < boxCells[locCol].length; i++) {
@@ -184,7 +184,7 @@ abstract class SudokuBox {
             boolean forRow = false;
 
             if (checkIfRowIsWithinBounderies(row)) {
-                Debugger.__("knowledge is relevant for row", this);
+                MyDebugger.__("knowledge is relevant for row", this);
                 forRow = true;
                 int locRow = row - this.row;
                 //System.out.println("cell: "+cell+ " - loc row= "+ locRow);
@@ -193,7 +193,7 @@ abstract class SudokuBox {
                 }
             }
             if (!(forCol || forRow)) {
-                Debugger.__("new knowledge not used - not relevant!", this);
+                MyDebugger.__("new knowledge not used - not relevant!", this);
             }
 
             fireLocalUpdate();
@@ -253,7 +253,7 @@ abstract class SudokuBox {
             }
             int x = Integer.parseInt("" + cell.charAt(0));
             int y = Integer.parseInt("" + cell.charAt(1));
-            Debugger.__("Initial Value for cell " + boxCells[x][y].getGlobalCellName() + "  = " + value, this);
+            MyDebugger.__("Initial Value for cell " + boxCells[x][y].getGlobalCellName() + "  = " + value, this);
             boxCells[x][y].setValue(value);
         }
     }

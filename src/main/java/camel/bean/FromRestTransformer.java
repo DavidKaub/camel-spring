@@ -1,4 +1,4 @@
-package com.javainuse.bean;
+package camel.bean;
 
 public class FromRestTransformer {
 

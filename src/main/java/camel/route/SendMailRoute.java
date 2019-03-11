@@ -1,8 +1,7 @@
-package com.javainuse.route;
+package camel.route;
 
-import com.javainuse.bean.MyTransformer;
 import org.apache.camel.builder.RouteBuilder;
-import com.javainuse.processor.MyProcessor;
+import camel.processor.MyProcessor;
 
 public class SendMailRoute extends RouteBuilder {
 

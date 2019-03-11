@@ -1,5 +1,6 @@
 package sudoku.solver;
-import lib.Debugger;
+
+import sudoku.lib.MyDebugger;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,7 +46,7 @@ class SudokuCell {
 
     void addNewConstraint(int constraint){
         if(potetialFits != null && potetialFits.contains(constraint)){
-            Debugger.__("Cell "+getGlobalCellName()+ " receiving new constraint: "+constraint, this);
+            MyDebugger.__("Cell "+getGlobalCellName()+ " receiving new constraint: "+constraint, this);
             potetialFits.remove((Integer) constraint);
             update();
         }

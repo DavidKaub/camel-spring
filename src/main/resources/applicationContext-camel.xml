@@ -5,7 +5,7 @@
 		http://camel.apache.org/schema/spring 
 		http://camel.apache.org/schema/spring/camel-spring.xsd">
 
-	<bean id="routeBuilder" class="com.javainuse.route.SendMailRoute" />
+	<bean id="routeBuilder" class="camel.route.SendMailRoute" />
 
 	<camelContext xmlns="http://camel.apache.org/schema/spring">
 		<routeBuilder ref="routeBuilder" />
