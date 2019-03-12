@@ -19,13 +19,20 @@ abstract class SudokuBox {
     protected NetworkHandler networkHandler;
     protected SudokuCell[][] boxCells;
     protected boolean isSolved = false;
+    protected boolean isInitialized = false;
 
     public SudokuBox() {
         initializeCells();
+    }
+
+
+    public void init(){
         MyDebugger.__("initialized!", this);
         MyDebugger.__(this.toString(), this);
         fireLocalUpdate();
+        isInitialized = true;
         sendInitialState();
+
     }
 
     public void fireLocalUpdate() {
@@ -90,6 +97,9 @@ abstract class SudokuBox {
     }
 
     private void sendNewKnowledgeToNeighbors(String message) {
+        if(!isInitialized){
+            return;
+        }
         MyDebugger.__("Sending new value to all neighbors: " + message, this);
         networkHandler.addOutgoingMessage(message);
     }

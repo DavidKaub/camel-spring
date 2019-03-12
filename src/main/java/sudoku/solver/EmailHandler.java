@@ -12,7 +12,7 @@ public class EmailHandler extends NetworkHandler {
     private String smtpUsername;
     private String password;
 
-    public EmailHandler(SudokuBox sudokuBox, String emailAdress, String imapServer, int imapPort, String imapUsername, String smtpServer, int smptPort, String smtpUserName, String password){
+    public EmailHandler(EmailBox sudokuBox, String emailAdress, String imapServer, int imapPort, String imapUsername, String smtpServer, int smptPort, String smtpUserName, String password){
         super(sudokuBox);
         this.emailAdress = emailAdress;
         this.imapServer = imapServer;
@@ -22,6 +22,8 @@ public class EmailHandler extends NetworkHandler {
         this.smptPort = smptPort;
         this.smtpUsername = smtpUserName;
         this.password = password;
+        sudokuBox.setNetworkHandler(this);
+        sudokuBox.init();
         establishConnectionToManager();
     }
 
@@ -42,6 +44,16 @@ public class EmailHandler extends NetworkHandler {
             readEmailsFromServer();
             //TODO: only commented for test purpuses
             //messageProcessing();
+
+            /**
+             * ORIGINAL VERSION!
+             *
+             * readEmailsFromServer();
+             * messageProcessing();
+             *
+             * thats it!
+             */
+
 
         }
         /**

@@ -1,7 +1,7 @@
 package sudoku.solver;
 
 
-import sudoku.lib.MyDebugger;
+
 
 import java.util.Arrays;
 import java.util.StringTokenizer;
@@ -20,11 +20,13 @@ public class EmailBox extends SudokuBox{
         column = Character.toUpperCase(column);
         row = Integer.parseInt("" + boxColRow.charAt(1));
         setInitialValues(initialValues);
-        fireLocalUpdate();
-        //TODO: I commented this method out, because it through an exception
-        //sendInitialState();
-        MyDebugger.__("Initialized email instance", this);
-        MyDebugger.__(this.toString(), this);
     }
+
+
+    public void setNetworkHandler(EmailHandler emailHandler){
+        this.networkHandler = emailHandler;
+    }
+
+
 
 }
