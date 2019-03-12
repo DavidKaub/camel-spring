@@ -1,13 +1,35 @@
 package camel.main;
-import org.apache.log4j.BasicConfigurator;
-import org.slf4j.Logger;
-import org.springframework.context.support.AbstractApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import camel.route.ReceiveMailRoute;
+import camel.route.SendMailRoute;
+import org.apache.camel.main.Main;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import sudoku.solver.EmailBox;
 import sudoku.solver.EmailHandler;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLEncoder;
+
 //this comment is only to test, if githubs push functionality works
 public class MainApp {
+    private static String boxName = "A1";
+    private static String boxNameForMqtt;
+    private static String initialValues = "00:2, 10:8, 12:7, 21:5, 22:9";
+    private static String managerURL = "";
+    private static String managerPort = "";
+    private static String mqttUrl;
+    private static String mqttPort;
+    private static String mqttPrefix;
+
+
+    private static boolean ssl = true;
+    private static int emailPollingDelay = 10;
+    private static boolean debug = false;
 
     private static String emailAdress = "sudokusolver2019@gmail.com";
     private static String imapServer = "imap.gmail.com";
@@ -19,45 +41,29 @@ public class MainApp {
     private static String password = "#sudokuSolver2019";
 
     public static void main(String[] args) {
-        int minutesToRunUntilAutoStop = 10;
-        /**
-         * TODO:
-         * 1. Send Message to BoxManager
-         * 2. Initialize Box
-         */
+        System.out.println("\n - programm start! - \n");
+//BasicConfigurator.configure();
 
-        /**
-         * the following has to be implemented in Camel!!
-         *
-         *
-         * do initial stuff - retrieve boxName, boxValue ip for MQTT
-         * TODO establish connection to boxManager retrieve and set initial values and boxName to SudokuBox sudokuBox
-         * Initiale Nachricht an den Manager
-         * Box erfragt alle relevanten Parameter:
-         * http://<SpringBoxManager>/api/initalize
-         * Der Manager sendet in diesem Fall folgende Nachricht zurück:
-         * {
-         * "mqtt-ip" : a.b.c.d,
-         * "mqtt-port" : 42,
-         * "box" : "sudoko/box_a4",
-         * "init" : [
-         * { "21" : 5 },
-         * { "01" : 7 }
-         * ]
-         * }
-         *
-         */
+        someCamle();
 
         //Mailtest begin
         //sudoku.solver.mailer.Mailer mailer = new sudoku.solver.mailer.Mailer();
         //mailer.testMailer();
         //Mailtest end
 
-        String boxName = "A1";
-        String initialValues = "00:2, 10:8, 12:7, 21:5, 22:9";
+
+
+        /**
+         *
+         * 1. Send Message to BoxManager
+         * 2. Initialize Box
+         * done!
+         */
+        //parseInitialJsonData(sendInitialRequest());
         EmailBox sudokuBox = new EmailBox(boxName,initialValues);
         EmailHandler emailHandler = new EmailHandler(sudokuBox,emailAdress, imapServer,imapPort,imapUsername,smtpServer,smptPort,smtpUsername,password);
         emailHandler.start();
+
 
         /**
          * 3. Start MQTT / Email Routes
@@ -65,10 +71,34 @@ public class MainApp {
          */
         //TODO create MQTT and Rest to Email route
 
-        //BasicConfigurator.configure();
-        AbstractApplicationContext sendMailContext = new ClassPathXmlApplicationContext("applicationContext-camel.xml");
-        AbstractApplicationContext receiveMailContext = new ClassPathXmlApplicationContext("applicationContext-receiveEmail.xml");
-        sendMailContext.start();
+
+
+
+    }
+
+
+    static void someCamle(){
+
+        int minutesToRunUntilAutoStop = 10;
+        //AbstractApplicationContext sendMailContext = new ClassPathXmlApplicationContext("applicationContext-camel.xml");
+        //AbstractApplicationContext receiveMailContext = new ClassPathXmlApplicationContext("applicationContext-receiveEmail.xml");
+        Main receiveMailMain = new Main();
+        Main sendMailMain = new Main();
+        receiveMailMain.addRouteBuilder(new ReceiveMailRoute(boxNameForMqtt,mqttUrl,mqttPort,emailAdress,imapServer,imapPort,ssl,imapUsername,password,emailPollingDelay,debug));
+        sendMailMain.addRouteBuilder(new SendMailRoute(boxNameForMqtt,mqttUrl,mqttPort,emailAdress,smtpServer,smptPort,ssl,smtpUsername,password,debug, emailAdress));
+        try {
+            System.out.println("starting receive");
+            receiveMailMain.start();
+            System.out.println("started receive");
+            System.out.println("starting send");
+            sendMailMain.start();
+            System.out.println("started send");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        //sendMailContext.start();
         //receiveMailContext.start();
         System.out.println("Application context started");
         try {
@@ -82,10 +112,106 @@ public class MainApp {
         }
 
         //TODO close all routes
-        sendMailContext.stop();
-        receiveMailContext.stop();
-        sendMailContext.close();
-        receiveMailContext.close();
-
+        //sendMailContext.stop();
+        //receiveMailMain.stop();
+        //sendMailContext.close();
+        //receiveMailMain.close();
     }
+
+
+
+    private static String sendInitialRequest()  {
+        URL myUrl = null;
+        HttpURLConnection httpURLConnection = null;
+        StringBuilder stringBuilder = new StringBuilder();
+        try {
+            myUrl = new URL("http://" + managerURL + ":" + managerPort + "/api/initialize");
+             httpURLConnection = (HttpURLConnection) myUrl.openConnection();
+            httpURLConnection.setRequestMethod("GET");
+            BufferedReader bufferedReaderIn = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
+
+            String line;
+            while ((line = bufferedReaderIn.readLine()) != null) {
+                stringBuilder.append(line);
+                stringBuilder.append(System.lineSeparator());
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+
+
+
+
+        return stringBuilder.toString();
+    }
+
+
+
+
+
+    private static void parseInitialJsonData(String json) throws JSONException {
+        JSONObject obj = new JSONObject(json);
+        mqttUrl = obj.getString("mqtt_ip");
+        mqttPort = ""+ obj.getInt("mqtt_port");
+        mqttPrefix = ""+ obj.getInt("mqtt_prefix");
+        boxNameForMqtt = obj.getString("boxname").trim();
+        boxName = "BOX_" + boxNameForMqtt.substring(boxNameForMqtt.length() - 2, boxNameForMqtt.length()).toUpperCase();
+        if (obj.has("init")) {
+            JSONArray arr = obj.getJSONArray("init");
+            StringBuilder b = new StringBuilder();
+            for (int i = 0; i < arr.length(); i++) {
+                JSONObject value = arr.getJSONObject(i);
+                for (int j = 0; j < 3; j++) {
+                    for (int k = 0; k < 3; k++) {
+                        if (value.has("" + j + k)) {
+                            b.append(j);
+                            b.append(k);
+                            b.append(':');
+                            b.append(value.getInt("" + j + k));
+                            if (i != arr.length() - 1) {
+                                b.append(',');
+                            }
+                        }
+                    }
+                }
+            }
+            initialValues = b.toString();
+        }
+    }
+
+
+    public static void sendReadyMessageToBoxManager() throws IOException {
+        URL myurl = new URL("http://" + managerURL + ":" + managerPort + "/api/ready?" + URLEncoder.encode("box=" + boxNameForMqtt, "UTF-8"));
+        HttpURLConnection con = (HttpURLConnection) myurl.openConnection();
+
+        con.setRequestMethod("GET");
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(con.getInputStream()));
+
+        String line;
+        StringBuilder content = new StringBuilder();
+
+        while ((line = in.readLine()) != null) {
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
