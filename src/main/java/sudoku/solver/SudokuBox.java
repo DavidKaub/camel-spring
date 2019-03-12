@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 abstract class SudokuBox {
-
     protected String boxName;
     protected char column;
     protected int row;
@@ -21,8 +20,6 @@ abstract class SudokuBox {
     protected SudokuCell[][] boxCells;
     protected boolean isSolved = false;
 
-
-
     public SudokuBox() {
         initializeCells();
         MyDebugger.__("initialized!", this);
@@ -30,9 +27,6 @@ abstract class SudokuBox {
         fireLocalUpdate();
         sendInitialState();
     }
-
-
-
 
     public void fireLocalUpdate() {
         if (!isSolved) {
@@ -73,7 +67,6 @@ abstract class SudokuBox {
             }
         }
     }
-
 
     public void receiveCellUpdate(SudokuCell cell) {
         if (!isSolved) {
@@ -117,7 +110,6 @@ abstract class SudokuBox {
         }
     }
 
-
     public void sendInitialState() {
         /**
          * Propagate current state to all neighbors
@@ -133,7 +125,6 @@ abstract class SudokuBox {
             }
         }
     }
-
 
     public void receiveKnowledge(String message) {
         if (isSolved) {
@@ -212,7 +203,6 @@ abstract class SudokuBox {
         //return knowledge;
     }
 
-
     private boolean checkIfRowIsWithinBounderies(int row) {
         if (this.row <= row && (this.row + 2) >= row) {
             //System.out.println("check for row: input = "+ row+ " local = "+ this.row+ " -> true");
@@ -229,7 +219,6 @@ abstract class SudokuBox {
         return false;
     }
 
-
     private void initializeCells() {
         //setup raw cells
         boxCells = new SudokuCell[3][3];
@@ -239,7 +228,6 @@ abstract class SudokuBox {
             }
         }
     }
-
 
     protected void setInitialValues(String initialValues) {
         StringTokenizer stringTokenizer = new StringTokenizer(initialValues, ", :");
@@ -257,7 +245,6 @@ abstract class SudokuBox {
             boxCells[x][y].setValue(value);
         }
     }
-
 
     public List<String> getNeighborNames() {
 

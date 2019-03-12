@@ -6,6 +6,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import sudoku.solver.EmailBox;
 import sudoku.solver.EmailHandler;
 
+//this comment is only to test, if githubs push functionality works
 public class MainApp {
 
     private static String emailAdress = "sudokusolver2019@gmail.com";
@@ -17,9 +18,6 @@ public class MainApp {
     private static String smtpUsername = "sudokusolver2019@gmail.com";
     private static String password = "#sudokuSolver2019";
 
-
-
-
     public static void main(String[] args) {
         int minutesToRunUntilAutoStop = 10;
         /**
@@ -27,7 +25,6 @@ public class MainApp {
          * 1. Send Message to BoxManager
          * 2. Initialize Box
          */
-
 
         /**
          * the following has to be implemented in Camel!!
@@ -51,6 +48,10 @@ public class MainApp {
          *
          */
 
+        //Mailtest begin
+        //sudoku.solver.mailer.Mailer mailer = new sudoku.solver.mailer.Mailer();
+        //mailer.testMailer();
+        //Mailtest end
 
         String boxName = "A1";
         String initialValues = "00:2, 10:8, 12:7, 21:5, 22:9";
@@ -58,17 +59,11 @@ public class MainApp {
         EmailHandler emailHandler = new EmailHandler(sudokuBox,emailAdress, imapServer,imapPort,imapUsername,smtpServer,smptPort,smtpUsername,password);
         emailHandler.start();
 
-
-
-
         /**
          * 3. Start MQTT / Email Routes
          * 4. Send OK TO BoxManager -> done by box via email!
          */
         //TODO create MQTT and Rest to Email route
-
-
-
 
         //BasicConfigurator.configure();
         AbstractApplicationContext sendMailContext = new ClassPathXmlApplicationContext("applicationContext-camel.xml");

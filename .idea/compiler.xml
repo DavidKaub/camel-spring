@@ -7,6 +7,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="camel-spring" />
+        <module name="camel-spring-2019-03-10" />
       </profile>
     </annotationProcessing>
   </component>

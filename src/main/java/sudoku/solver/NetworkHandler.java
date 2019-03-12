@@ -19,9 +19,6 @@ abstract class NetworkHandler extends Thread {
     protected Lock lockForIncomingMessages = new ReentrantLock();
     protected Lock lockForOutgoingMessages = new ReentrantLock();
 
-
-
-
     public NetworkHandler(SudokuBox sudokuBox) {
         this.sudokuBox = sudokuBox;
         this.boxName = sudokuBox.getBoxName();
@@ -29,10 +26,9 @@ abstract class NetworkHandler extends Thread {
         establishConnectionToManager();
     }
 
-
-
     void messageProcessing(){
         if (!sudokuBox.isSolved()) {
+            //if sudokuBox isn't yet solved
             if (lockForIncomingMessages.tryLock()) {
                 // Got the lock
                 try {
@@ -50,6 +46,7 @@ abstract class NetworkHandler extends Thread {
                 noLockNotification();
             }
         } else if (!sentSolvedMessage) {
+            //if sudokuBox is solved & message about it hasn't yet been send
             sendIsSolved();
         }
         sendPendingMessages();
@@ -61,17 +58,7 @@ abstract class NetworkHandler extends Thread {
          */
     }
 
-
-
-
-
-
-
-
     abstract void establishConnectionToManager();
-
-
-
 
     protected void addIncomingMessage(String message) {
         //Debugger.__("received incoming message: " + message + " from neighbor", this);
@@ -103,7 +90,6 @@ abstract class NetworkHandler extends Thread {
     protected void addOutgoingMessage(String message) {
         // Debugger.__("received outgoing message: " + message + " from box", this);
 
-
         if (lockForOutgoingMessages.tryLock()) {
             // Got the lock
             try {
@@ -123,7 +109,6 @@ abstract class NetworkHandler extends Thread {
             addOutgoingMessage(message);
         }
     }
-
 
     protected void addKnowledgeToSheet(String message) {
         char col = message.charAt(0);
@@ -168,15 +153,9 @@ abstract class NetworkHandler extends Thread {
         MyDebugger.__("DIDNT GET THE LOCK!!!!!",this);
     }
 
-
     abstract void sendPendingMessages();
-
-
-
-
 
     public String getBoxName() {
         return boxName;
     }
-
 }

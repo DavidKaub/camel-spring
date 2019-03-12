@@ -7,17 +7,13 @@ import java.util.Arrays;
 import java.util.List;
 
 class SudokuCell {
-
-
     private int columnInBox;
     private int rowInBox;
     private boolean isSolved;
     private int value;
 
-
     private SudokuBox parent;
     private List<Integer> potetialFits;
-
 
     SudokuCell(SudokuBox parent, int columnInBox, int rowInBox){
         this.parent = parent;
