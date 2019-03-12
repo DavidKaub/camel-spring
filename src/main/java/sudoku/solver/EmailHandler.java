@@ -77,7 +77,7 @@ public class EmailHandler extends NetworkHandler {
                  * 2. Read emails.....
                  */
                 sudoku.solver.mailer.Mailer mailer = new sudoku.solver.mailer.Mailer();
-                List<String> contents = mailer.receive("sudokusolver2019@gmail.com", "#sudokuSolver2019");
+                List<String> contents = mailer.receive(emailAdress, password);
                 if(contents != null)
                 {
                     for (String content :
