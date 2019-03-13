@@ -20,9 +20,10 @@ public class MailToMqttRoute extends RouteBuilder{
     private String password;
     private int delay;
     private boolean debug;
+    private String mqttPrefix;
 
 
-    public MailToMqttRoute(String boxName, String boxNameForMqtt, String mqttUrl, String mqttPort, String emailAdress, String imapServer, int imapPort, boolean ssl, String imapUsername, String password, int delay, boolean debug) {
+    public MailToMqttRoute(String boxName, String boxNameForMqtt, String mqttUrl, String mqttPort, String mqttPrefix, String emailAdress, String imapServer, int imapPort, boolean ssl, String imapUsername, String password, int delay, boolean debug) {
         this.boxNameForMqtt = boxNameForMqtt;
         this.mqttUrl = mqttUrl;
         this.mqttPort = mqttPort;
@@ -35,6 +36,7 @@ public class MailToMqttRoute extends RouteBuilder{
         this.delay = delay;
         this.debug = debug;
         this.boxName = boxName;
+        this.mqttPrefix = mqttPrefix;
     }
 
     @Override
@@ -48,9 +50,9 @@ public class MailToMqttRoute extends RouteBuilder{
                     .process(new ProcessorEmailToMqtt(boxName,boxNameForMqtt))
                     .choice()
                     .when(header("type").isEqualTo("knowledge"))
-                    .to("mqtt:bar?host=tcp://" + this.mqttUrl + ":" + this.mqttPort+"&publishTopicName=" + this.boxNameForMqtt)
+                    .to("mqtt:bar?host=tcp://" + this.mqttUrl + ":" + this.mqttPort+"&publishTopicName=" + this.mqttPrefix + "/sudoku/" + this.boxName)
                     .when(header("type").isEqualTo("result"))
-                    .to("mqtt:bar?host=tcp://" + this.mqttUrl + ":" + this.mqttPort+"&publishTopicName=" + this.boxNameForMqtt + "/result");
+                    .to("mqtt:bar?host=tcp://" + this.mqttUrl + ":" + this.mqttPort+"&publishTopicName=" + this.mqttPrefix + "/sudoku/" + this.boxName + "/result");
 
     }
 }

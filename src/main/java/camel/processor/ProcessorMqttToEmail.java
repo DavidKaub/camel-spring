@@ -16,19 +16,21 @@ public class ProcessorMqttToEmail implements Processor {
     private String mqttPort;
     private EmailHandler emailHandler;
     private MqttToMailRoute mqttToMailRoute;
+    private String mqttPrefix;
 
-    public ProcessorMqttToEmail(String boxNameForMqtt, String boxname, String mqttUrl, String mqttPort, EmailHandler emailHandler, MqttToMailRoute mqttToMailRoute) {
+    public ProcessorMqttToEmail(String boxNameForMqtt, String boxname, String mqttUrl, String mqttPort, String mqttPrefix, EmailHandler emailHandler, MqttToMailRoute mqttToMailRoute) {
         this.boxNameForMqtt = boxNameForMqtt;
         this.boxName = boxname;
         this.mqttUrl = mqttUrl;
         this.mqttPort = mqttPort;
         this.emailHandler = emailHandler;
         this.mqttToMailRoute = mqttToMailRoute;
+        this.mqttPrefix = mqttPrefix;
     }
 
     @Override
     public void process(Exchange exchange) throws Exception {
-        System.out.println(exchange.getIn().getHeaders());
+        //System.out.println(exchange.getIn().getHeaders());
         System.out.println("Now processing Output " + exchange.getIn().getBody(String.class));
         this.evaluateExchangeType(exchange);
 
@@ -51,7 +53,7 @@ public class ProcessorMqttToEmail implements Processor {
         //1. route
         //TODO send Mail wird in receive Mail gestarted -> erst wenn start nachricht vorliegt
         Main mailToMqttMain = new Main();
-        mailToMqttMain.addRouteBuilder(new MailToMqttRoute(boxName, boxNameForMqtt,mqttUrl,mqttPort,mqttToMailRoute.getEmailAdress(),mqttToMailRoute.getImapServer(),mqttToMailRoute.getImapPort(),mqttToMailRoute.isSsl(),mqttToMailRoute.getImapUsername(),mqttToMailRoute.getPassword(),mqttToMailRoute.getImapPollingDelay(),mqttToMailRoute.isDebug()));
+        mailToMqttMain.addRouteBuilder(new MailToMqttRoute(boxName,boxNameForMqtt,mqttUrl,mqttPort,mqttPrefix,mqttToMailRoute.getEmailAdress(),mqttToMailRoute.getImapServer(),mqttToMailRoute.getImapPort(),mqttToMailRoute.isSsl(),mqttToMailRoute.getImapUsername(),mqttToMailRoute.getPassword(),mqttToMailRoute.getImapPollingDelay(),mqttToMailRoute.isDebug()));
         System.out.println("starting mailToMqttMain");
         try {
             mailToMqttMain.start();

@@ -31,7 +31,7 @@ public class MainApp {
 
     private static boolean emailSslEnabled ;
     private static int emailPollingDelay = 1000;
-    private static boolean emailDebugEnabled = false;
+    private static boolean emailDebugEnabled = true;
     private static String emailAdressMqttToBox;
     private static String emailAdressBoxToMqtt;
     private static String imapServer;
