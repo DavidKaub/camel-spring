@@ -17,11 +17,11 @@ import java.net.URLEncoder;
 
 //this comment is only to test, if githubs push functionality works
 public class MainApp {
-    private static String boxName = "A1";
+    private static String boxName = "A1";//TODO remove value
     private static String boxNameForMqtt;
-    private static String initialValues = "00:2, 10:8, 12:7, 21:5, 22:9";
-    private static String managerURL = "";
-    private static String managerPort = "";
+    private static String initialValues = "00:7, 10:3, 11:4, 12:6, 22:1";//Todo remove value
+    private static String managerURL = "136.199.12.246";
+    private static String managerPort = "4242";
     private static String mqttUrl;
     private static String mqttPort;
     private static String mqttPrefix;
@@ -115,8 +115,8 @@ public class MainApp {
         }else{
             emailSslEnabled = false;
 
-            imapServer = "192.168.178.42";
-            smtpServer = "192.168.178.42";
+            imapServer = "localhost";
+            smtpServer = imapServer;
             imapPort = 143;//gmail
             smptPort = 587;//gamil
 
@@ -129,10 +129,6 @@ public class MainApp {
             imapUsernameBoxToMqtt = "email2";
             smtpUsernameBoxToMqtt = emailAdressBoxToMqtt;
             emailPasswordBoxToMqtt = "apfelmusmann";
-
-
-
-
         }
 
     }

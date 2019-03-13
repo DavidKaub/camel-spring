@@ -1,5 +1,6 @@
 package sudoku.solver;
 
+import java.io.IOException;
 import java.util.List;
 
 public class EmailHandler extends NetworkHandler {
@@ -118,31 +119,15 @@ public class EmailHandler extends NetworkHandler {
 
     @Override
     void sendIsSolved() {
-        //TODO
-        //send the is Solved message to boxManager (here via email!)
-        //an der stelle könnte man auch einfach nur bei den ausgehenden nachrichten outgoingMessages einen zusätzlichne string hinzufügen,
 
-        //list all found values comma separated
-        StringBuffer sb = new StringBuffer();
-        for(int col=0; col<=2; col++)
-        {
-            for(int row=0; row<=2; row++)
-            {
-                SudokuCell cell = sudokuBox.boxCells[col][row];
-                sb.append(cell.getValue());
-                if((col == 2) && (row == 2))
-                {
-                    //don't append anything
-                }else
-                {
-                    sb.append(",");
-                }
-            }
-        }
-        //send result-Message via Mail
+
+
+
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("RESULT," + "BOX_"+sudokuBox.getBoxName() + ",");
+        stringBuilder.append(sudokuBox.printResult().trim());
         sudoku.solver.mailer.Mailer mailer = new sudoku.solver.mailer.Mailer();
-        String resultMessage = "{\"box\":\"sudoku/box_" + sudokuBox.boxName + "\",\"result\":["+ sb.toString() + "]}";
-        mailer.sendMail(resultMessage,"subject",emailAdress,smtpUsername,emailAdressReceiver,password,sslEnabled,smtpServer,smptPort+"");
+        mailer.sendMail(stringBuilder.toString(),"BOX_"+boxName+" RESULT",emailAdress,smtpUsername,emailAdressReceiver,password,sslEnabled,smtpServer,smptPort+"");
 
         /**
          * Ergebnisnachricht an den Manager
@@ -183,10 +168,8 @@ public class EmailHandler extends NetworkHandler {
                         // Subject is practically irrelevant? No receiver needed due to mqtt
                         // -> receiver could be added to subject (to simulate email application)
                         //TODO the camel instance needs to translate this message to a json string!
-                        for (String neighborName : sudokuBox.getNeighborNames()) {
-                            //optional Send email for each neighbor! (add neighbor name to email subject)
-                            mailer.sendMail(message,neighborName,emailAdress,smtpUsername,emailAdressReceiver,password,sslEnabled,smtpServer,smptPort+"");
-                        }
+                        mailer.sendMail(message,"Knowledge from BOX_"+boxName,emailAdress,smtpUsername,emailAdressReceiver,password,sslEnabled,smtpServer,smptPort+"");
+
                     }
                     outgoingMessages.clear();
 

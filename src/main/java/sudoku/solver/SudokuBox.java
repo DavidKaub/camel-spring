@@ -178,7 +178,7 @@ abstract class SudokuBox {
 
             //TODO Pürfe diese Methoden bzw die schleifen!
             if (checkIfColumnIsWithinBounderies(column)) {
-                MyDebugger.__("knowledge is relevant for column", this);
+                //MyDebugger.__("knowledge is relevant for column", this);
                 forCol = true;
                 int locCol = column - this.column;
                 for (int i = 0; i < boxCells[locCol].length; i++) {
@@ -188,7 +188,7 @@ abstract class SudokuBox {
             boolean forRow = false;
 
             if (checkIfRowIsWithinBounderies(row)) {
-                MyDebugger.__("knowledge is relevant for row", this);
+                //MyDebugger.__("knowledge is relevant for row", this);
                 forRow = true;
                 int locRow = row - this.row;
                 //System.out.println("cell: "+cell+ " - loc row= "+ locRow);
