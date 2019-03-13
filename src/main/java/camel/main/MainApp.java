@@ -17,14 +17,16 @@ import java.net.URLEncoder;
 
 //this comment is only to test, if githubs push functionality works
 public class MainApp {
-    private static String boxName = "A1";//TODO remove value
-    private static String boxNameForMqtt;
+    private static String boxName = "BOX_D7";//TODO remove value
+    private static String boxNameForMqtt = "sudoku/box_d7";
     private static String initialValues = "00:7, 10:3, 11:4, 12:6, 22:1";//Todo remove value
     private static String managerURL = "136.199.12.246";
     private static String managerPort = "4242";
-    private static String mqttUrl;
-    private static String mqttPort;
-    private static String mqttPrefix;
+    private static String mqttUrl = "136.199.51.71";
+    private static String mqttPort = "1883";
+    private static String mqttPrefix = "TEST";
+
+
 
 
     private static boolean emailSslEnabled ;
@@ -63,9 +65,9 @@ public class MainApp {
          * 2. Initialize Box
          * done!
          */
-        String result = sendInitialRequest();
+        //String result = sendInitialRequest();
         System.out.println("connect completed - now parsing data");
-        parseInitialJsonData(result);
+        //parseInitialJsonData(result);
         System.out.println("parsed!");
         EmailBox sudokuBox = new EmailBox(boxName,initialValues);
         EmailHandler emailHandler = new EmailHandler(sudokuBox,emailAdressBoxToMqtt, imapServer,imapPort,imapUsernameBoxToMqtt,smtpServer,smptPort,smtpUsernameBoxToMqtt,emailPasswordBoxToMqtt, emailSslEnabled,emailAdressMqttToBox);
@@ -145,7 +147,7 @@ public class MainApp {
         //AbstractApplicationContext sendMailContext = new ClassPathXmlApplicationContext("applicationContext-camel.xml");
         //AbstractApplicationContext receiveMailContext = new ClassPathXmlApplicationContext("applicationContext-receiveEmail.xml");
         Main mqttToMailMain = new Main();
-        mqttToMailMain.addRouteBuilder(new MqttToMailRoute(boxName,boxNameForMqtt,mqttUrl,mqttPort,emailAdressMqttToBox,smtpServer,smptPort,emailSslEnabled,smtpUsernameMqttToBox,emailPasswordMqttToBox,emailDebugEnabled, emailAdressBoxToMqtt, emailHandler,imapUsernameMqttToBox,imapServer,imapPort, emailPollingDelay));
+        mqttToMailMain.addRouteBuilder(new MqttToMailRoute(boxName,boxNameForMqtt,mqttUrl,mqttPort,mqttPrefix,emailAdressMqttToBox,smtpServer,smptPort,emailSslEnabled,smtpUsernameMqttToBox,emailPasswordMqttToBox,emailDebugEnabled, emailAdressBoxToMqtt, emailHandler,imapUsernameMqttToBox,imapServer,imapPort, emailPollingDelay));
 
         try {
 

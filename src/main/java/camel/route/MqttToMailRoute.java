@@ -21,6 +21,7 @@ public class MqttToMailRoute extends RouteBuilder {
     private String receiverEmailAdress;
     private String boxName;
     private EmailHandler emailHandler;
+    private String mqttTopic;
 
     private String imapServer;
     private String imapUsername;
@@ -45,7 +46,7 @@ public class MqttToMailRoute extends RouteBuilder {
     }
 
     public MqttToMailRoute(
-            String boxName, String boxNameForMqtt, String mqttUrl, String mqttPort, String emailAdress, String smtpServer, int smtpPort, boolean ssl, String smtpUsername, String password, boolean debug, String receiverEmailAdress, EmailHandler emailHandler, String imapUsername, String imapServer,int imapPort, int imapPollingDelay) {
+            String boxName, String boxNameForMqtt, String mqttUrl, String mqttPort, String mqttTopic, String emailAdress, String smtpServer, int smtpPort, boolean ssl, String smtpUsername, String password, boolean debug, String receiverEmailAdress, EmailHandler emailHandler, String imapUsername, String imapServer,int imapPort, int imapPollingDelay) {
         System.out.println("send mail route!");
         this.boxNameForMqtt = boxNameForMqtt;
         this.mqttUrl = mqttUrl;
@@ -64,6 +65,7 @@ public class MqttToMailRoute extends RouteBuilder {
         this.imapPort = imapPort;
         this.imapUsername = imapUsername;
         this.imapPollingDelay = imapPollingDelay;
+        this.mqttTopic = mqttTopic;
     }
 
     @Override
@@ -72,10 +74,8 @@ public class MqttToMailRoute extends RouteBuilder {
 
         String smtpString = "smtp" + (this.ssl ? 's' : "") + "://"+smtpServer+":"+smtpPort+"?username=" + smtpUsername+"&password=" + password +"&to="+receiverEmailAdress+ (this.debug ? "&debugMode=true" : "");
         //System.out.println(smtpString);
-
-        String mqtt = "mqtt:bar?host=tcp://" + this.mqttUrl + ":" + this.mqttPort + "&subscribeTopicNames=sudoku/+";
+        String mqtt = "mqtt:bar?host=tcp://" + this.mqttUrl + ":" + this.mqttPort + "&subscribeTopicNames=" + this.mqttTopic + "/sudoku/+";
         System.out.println(mqtt);
-
         from(mqtt)
                 .process(new ProcessorMqttToEmail(boxNameForMqtt,boxName,mqttUrl,mqttPort, emailHandler,this))
                 .to(smtpString);
