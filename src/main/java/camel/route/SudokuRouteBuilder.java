@@ -1,6 +1,5 @@
 package camel.route;
 
-import camel.bean.MQTTConverter;
 import org.apache.camel.Exchange;
 import org.apache.camel.Processor;
 import org.apache.camel.builder.RouteBuilder;
@@ -43,7 +42,7 @@ public class SudokuRouteBuilder extends RouteBuilder{
         System.out.println("Subscribing to topics: " + subscribeTopics.toString());
         from("mqtt:sudoku?host=" + this.mqttHost + "&subscribeTopicNames=" + subscribeTopics.toString())
                 .transform(body().convertToString())
-                .bean(MQTTConverter.class)
+                //.bean(MQTTConverter.class)
                 .log("Received fieldConfiguration via MQTT-Topic. Forwarding it to Email.")
                 .to("smtps://smtp.gmail.com:465?username=sudokusolver2019@gmail.com&password=#sudokuSolver2019&to=sudokusolver2019@gmail.com");
 

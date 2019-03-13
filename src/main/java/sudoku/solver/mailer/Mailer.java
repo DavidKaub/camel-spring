@@ -39,9 +39,9 @@ public class Mailer {
         //You can use imap or imap , *s -Secured
         properties.put("mail.store.protocol", protocol);
         //Host Address of Your Mail
-        properties.put("mail.imap.host", host);
+        properties.put("mail.imaps.host", host);
         //Port number of your Mail Host
-        properties.put("mail.imap.port", port);
+        properties.put("mail.imaps.port", port);
         //properties.put("mail.imaps.timeout", "10000");
 
         try {
@@ -49,11 +49,10 @@ public class Mailer {
             Session session = Session.getDefaultInstance(properties, null);
             //SET the store for IMAPS
             Store store = session.getStore(protocol);
-            System.out.println("Connection initiated");
+            //System.out.println("Connection initiated");
             //Trying to connect IMAP server
-            System.out.println(receiver+ " / "+ password);
             store.connect(receiver, password);
-            System.out.println("Connection is ready");
+            //System.out.println("Connection is ready");
 
             //Get inbox folder
             Folder inbox = store.getFolder("inbox");
@@ -125,7 +124,7 @@ public class Mailer {
         return null;
     }
 
-    public void sendMail(String message, String subject,String sender, String senderUserName, String receiver, String password, String protocol, String host, String port) {
+    public void sendMail(String message, String subject,String sender, String senderUserName, String receiver, String password, boolean ssl, String host, String port) {
         /*        //mail to own mailserver
         mailer.setDestmailid("email1@localhost");
         mailer.setSendrmailid("email1@localhost");
@@ -152,7 +151,9 @@ public class Mailer {
         Properties propvls = new Properties();
         propvls.put("mail.smtp.auth", "true");
         //propvls.put("mail.smtp.ssl.trust", "*");
-        propvls.put("mail.smtp.starttls.enable", "true");
+        if(ssl){
+            propvls.put("mail.smtp.starttls.enable", "true");
+        }
         propvls.put("mail.smtp.host", smtphost);
         propvls.put("mail.smtp.port", port);
 

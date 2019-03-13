@@ -142,7 +142,7 @@ public class EmailHandler extends NetworkHandler {
         //send result-Message via Mail
         sudoku.solver.mailer.Mailer mailer = new sudoku.solver.mailer.Mailer();
         String resultMessage = "{\"box\":\"sudoku/box_" + sudokuBox.boxName + "\",\"result\":["+ sb.toString() + "]}";
-        mailer.sendMail(resultMessage,"subject",emailAdress,smtpUsername,emailAdressReceiver,password,(sslEnabled ? "smtps":"smtp"),smtpServer,smptPort+"");
+        mailer.sendMail(resultMessage,"subject",emailAdress,smtpUsername,emailAdressReceiver,password,sslEnabled,smtpServer,smptPort+"");
 
         /**
          * Ergebnisnachricht an den Manager
@@ -185,7 +185,7 @@ public class EmailHandler extends NetworkHandler {
                         //TODO the camel instance needs to translate this message to a json string!
                         for (String neighborName : sudokuBox.getNeighborNames()) {
                             //optional Send email for each neighbor! (add neighbor name to email subject)
-                            mailer.sendMail(message,neighborName,emailAdress,smtpUsername,emailAdressReceiver,password,(sslEnabled ? "smtps":"smtp"),smtpServer,smptPort+"");
+                            mailer.sendMail(message,neighborName,emailAdress,smtpUsername,emailAdressReceiver,password,sslEnabled,smtpServer,smptPort+"");
                         }
                     }
                     outgoingMessages.clear();

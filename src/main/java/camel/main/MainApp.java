@@ -27,29 +27,25 @@ public class MainApp {
     private static String mqttPrefix;
 
 
-    private static boolean emailSslEnabled = false;
-    private static int emailPollingDelay = 10;
+    private static boolean emailSslEnabled ;
+    private static int emailPollingDelay = 1000;
     private static boolean emailDebugEnabled = false;
-    private static String emailAdressMqttToBox = "email1@localhost";
-    private static String emailAdressBoxToMqtt = "email2@localhost";
-    private static String imapServer = "192.168.178.42";
-    //private static String imapServer = "imap.gmail.com";
-    private static int imapPort = 143;
-    //private static int imapPort = 993;
-    private static String imapUsernameMqttToBox = "email1";
-    private static String imapUsernameBoxToMqtt = "email2";
-    private static String smtpServer = "192.168.178.42";
-    //private static String smtpServer = "smtp.gmail.com";
-    private static int smptPort = 587;
-
-    //private static int smptPort = 465;
-    private static String smtpUsernameMqttToBox = "email1@localhost";
-    private static String smtpUsernameBoxToMqtt = "email2@localhost";
-    private static String emailPasswordMqttToBox = "apfelmusmann";
-    private static String emailPasswordBoxToMqtt = "apfelmusmann";
+    private static String emailAdressMqttToBox;
+    private static String emailAdressBoxToMqtt;
+    private static String imapServer;
+    private static int imapPort;//gmail
+    private static String imapUsernameMqttToBox;
+    private static String imapUsernameBoxToMqtt;
+    private static String smtpServer;
+    private static int smptPort = 465;//gamil
+    private static String smtpUsernameMqttToBox;
+    private static String smtpUsernameBoxToMqtt;
+    private static String emailPasswordMqttToBox;
+    private static String emailPasswordBoxToMqtt;
 
     public static void main(String[] args) {
         System.out.println("\n - programm start! - \n");
+        initMail(true);
 //BasicConfigurator.configure();
 
 
@@ -87,9 +83,57 @@ public class MainApp {
          * 4. Send OK TO BoxManager -> done by box via email!
          */
         //TODO create MQTT and Rest to Email route
+    }
 
 
 
+
+    private static void initMail(boolean gmail){
+
+
+        if(gmail){
+            emailSslEnabled = true;
+
+            imapServer = "imap.gmail.com";
+            imapPort = 993;
+            smtpServer = "smtp.gmail.com";
+            smptPort = 587;//oder 465?
+
+
+            emailAdressMqttToBox = "sudokusolver2019@gmail.com";
+            imapUsernameMqttToBox = "sudokusolver2019";
+            smtpUsernameMqttToBox = emailAdressMqttToBox;
+            emailPasswordMqttToBox = "#sudokuSolver2019";
+
+            emailAdressBoxToMqtt = "sudokusolver2019v2@gmail.com";
+            imapUsernameBoxToMqtt = "sudokusolver2019v2";
+            smtpUsernameBoxToMqtt = emailAdressBoxToMqtt;
+            emailPasswordBoxToMqtt = "#sudokuSolver2019";
+
+
+
+        }else{
+            emailSslEnabled = false;
+
+            imapServer = "192.168.178.42";
+            smtpServer = "192.168.178.42";
+            imapPort = 143;//gmail
+            smptPort = 587;//gamil
+
+            emailAdressMqttToBox = "email1@localhost";
+            imapUsernameMqttToBox = "email1";
+            smtpUsernameMqttToBox = emailAdressMqttToBox;
+            emailPasswordMqttToBox = "apfelmusmann";
+
+            emailAdressBoxToMqtt = "email2@localhost";
+            imapUsernameBoxToMqtt = "email2";
+            smtpUsernameBoxToMqtt = emailAdressBoxToMqtt;
+            emailPasswordBoxToMqtt = "apfelmusmann";
+
+
+
+
+        }
 
     }
 

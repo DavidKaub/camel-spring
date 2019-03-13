@@ -156,6 +156,7 @@ abstract class SudokuBox {
     abstract void receiveKnowledge(String message);
 
     private void receiveAbsoluteKnowledge(String message, boolean resent) {
+        System.out.println("message received:  "+message);
         if (isSolved) {
             return;
         }
@@ -170,7 +171,7 @@ abstract class SudokuBox {
 
             char column = cell.charAt(0);
             int row = Integer.parseInt("" + cell.charAt(1));
-            int value = Integer.parseInt(strokenizer.nextToken());
+            int value = Integer.parseInt(strokenizer.nextToken().trim());
 
             boolean forCol = false;
 

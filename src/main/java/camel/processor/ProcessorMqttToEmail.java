@@ -30,12 +30,17 @@ public class ProcessorMqttToEmail implements Processor {
     public void process(Exchange exchange) throws Exception {
         System.out.println(exchange.getIn().getHeaders());
         System.out.println("Now processing Output " + exchange.getIn().getBody(String.class));
-        /**
-         * 1. prüfe ob es wissen oder ob es start ist
-         * 2. wenn es start ist, dann starte erst die route to mqtt UND emailHandler.start
-         * sonst leite wissen über email weiter (setzt topic entsprechend, dass es nicht später gefiltert wird)
-         */
+        this.evaluateExchangeType(exchange);
 
+        if (exchange.getOut().getHeader("type", String.class).equals("knowledge")) {
+            this.parseKnowledgeJSON(exchange);
+            return;
+        }
+
+        if (exchange.getOut().getHeader("type", String.class).equals("start")) {
+            initRoutesAndServices();
+            return;
+        }
 
 
     }
