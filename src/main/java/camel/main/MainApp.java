@@ -19,7 +19,7 @@ import java.net.URLEncoder;
 public class MainApp {
     private static String boxName = "BOX_D7";//TODO remove value
     private static String boxNameForMqtt = "sudoku/box_d7";
-    private static String initialValues = "00:7, 10:3, 11:4, 12:6, 22:1";//Todo remove value
+    private static String initialValues = "";//Todo remove value 00:7, 10:3, 11:4, 12:6, 22:1
     private static String managerURL = "136.199.12.246";
     private static String managerPort = "4242";
     private static String mqttUrl = "136.199.51.71";
