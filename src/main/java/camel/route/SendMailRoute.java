@@ -18,9 +18,10 @@ public class SendMailRoute extends RouteBuilder {
     private String password;
     private boolean debug;
     private String receiverEmailAdress;
+    private String boxName;
 
     public SendMailRoute(
-            String boxNameForMqtt, String mqttUrl, String mqttPort, String emailAdress, String smtpServer, int smtpPort, boolean ssl, String smtpUsername, String password, boolean debug, String receiverEmailAdress) {
+            String boxName, String boxNameForMqtt, String mqttUrl, String mqttPort, String emailAdress, String smtpServer, int smtpPort, boolean ssl, String smtpUsername, String password, boolean debug, String receiverEmailAdress) {
         System.out.println("send mail route!");
         this.boxNameForMqtt = boxNameForMqtt;
         this.mqttUrl = mqttUrl;
@@ -33,6 +34,7 @@ public class SendMailRoute extends RouteBuilder {
         this.password = password;
         this.debug = debug;
         this.receiverEmailAdress = receiverEmailAdress;
+        this.boxName = boxName;
     }
 
     @Override
@@ -43,7 +45,7 @@ public class SendMailRoute extends RouteBuilder {
         System.out.println(smtpString);
 
         from("mqtt:bar?host=tcp://" + this.mqttUrl + ":" + this.mqttPort + "&subscribeTopicNames=sudoku/+")
-                //.process(new ProcessorToEmail())
+                .process(new ProcessorToEmail(boxNameForMqtt,boxName,mqttUrl,mqttPort))
                 .to(smtpString);
     }
 }
