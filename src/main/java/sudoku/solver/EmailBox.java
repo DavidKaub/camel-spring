@@ -13,12 +13,13 @@ public class EmailBox extends SudokuBox{
         unusedValues.addAll(Arrays.asList(1, 2, 3, 4, 5, 6, 7, 8, 9));
         StringTokenizer stringTokenizer = new StringTokenizer(boxName, "_");
         String boxColRow = stringTokenizer.nextToken();
-        if(boxColRow.equals("box")){
-            boxColRow = stringTokenizer.nextToken();
-        }
+        boxColRow = stringTokenizer.nextToken();
+
         column = boxColRow.charAt(0);
         column = Character.toUpperCase(column);
-        row = Integer.parseInt("" + boxColRow.charAt(1));
+System.out.println(boxName);
+System.out.println(boxColRow);
+        row = Integer.parseInt(("" + boxColRow.charAt(1)).trim());
         setInitialValues(initialValues);
     }
 

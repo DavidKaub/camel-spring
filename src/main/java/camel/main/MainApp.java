@@ -63,23 +63,24 @@ public class MainApp {
          * 2. Initialize Box
          * done!
          */
-        System.out.println("prepare");
         String result = sendInitialRequest();
-        System.out.println("connect completed - now parsing");
+        System.out.println("connect completed - now parsing data");
         parseInitialJsonData(result);
         System.out.println("parsed!");
         EmailBox sudokuBox = new EmailBox(boxName,initialValues);
         EmailHandler emailHandler = new EmailHandler(sudokuBox,emailAdressBoxToMqtt, imapServer,imapPort,imapUsernameBoxToMqtt,smtpServer,smptPort,smtpUsernameBoxToMqtt,emailPasswordBoxToMqtt, emailSslEnabled,emailAdressMqttToBox);
-        //startCamel(emailHandler);
+
+        startCamel(emailHandler);
         //TODO verzögern bis start nachricht erhalten
         emailHandler.start();
-/*
+
         try {
+
             sendReadyMessageToBoxManager();
         } catch (IOException e) {
             e.printStackTrace();
         }
-        */
+
 
 
         /**
@@ -162,13 +163,12 @@ public class MainApp {
 
 
     private static String sendInitialRequest()  {
-        System.out.println("send initial request");
         URL myUrl = null;
         HttpURLConnection httpURLConnection = null;
         StringBuilder stringBuilder = new StringBuilder();
         try {
             myUrl = new URL("http://" + managerURL + ":" + managerPort + "/api/initialize");
-            System.out.println("send request to: "+myUrl.toString());
+            //System.out.println("send request to: "+myUrl.toString());
             httpURLConnection = (HttpURLConnection) myUrl.openConnection();
             httpURLConnection.setRequestMethod("GET");
             BufferedReader bufferedReaderIn = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
@@ -193,16 +193,17 @@ public class MainApp {
 
 
 
-    private static void parseInitialJsonData(String json) throws JSONException {
+    private static String  parseInitialJsonData(String json) throws JSONException {
+        StringBuilder b = new StringBuilder();
         JSONObject obj = new JSONObject(json);
         mqttUrl = obj.getString("mqtt_ip");
-        mqttPort = ""+ obj.getInt("mqtt_port");
-        mqttPrefix = ""+ obj.getInt("mqtt_prefix");
+        mqttPort = ""+obj.getInt("mqtt_port");
+        mqttPrefix = obj.getString("mqtt_prefix");
         boxNameForMqtt = obj.getString("boxname").trim();
         boxName = "BOX_" + boxNameForMqtt.substring(boxNameForMqtt.length() - 2, boxNameForMqtt.length()).toUpperCase();
         if (obj.has("init")) {
-            JSONArray arr = obj.getJSONArray("init");
-            StringBuilder b = new StringBuilder();
+            JSONArray arr = (new JSONObject("{\"init\" : " + obj.getString("init") + '}')).getJSONArray("init");
+
             for (int i = 0; i < arr.length(); i++) {
                 JSONObject value = arr.getJSONObject(i);
                 for (int j = 0; j < 3; j++) {
@@ -219,12 +220,14 @@ public class MainApp {
                     }
                 }
             }
-            initialValues = b.toString();
+
         }
+        return b.toString();
     }
 
 
     public static void sendReadyMessageToBoxManager() throws IOException {
+        System.out.println("Sending ready");
         URL myurl = new URL("http://" + managerURL + ":" + managerPort + "/api/ready?" + URLEncoder.encode("box=" + boxNameForMqtt, "UTF-8"));
         HttpURLConnection con = (HttpURLConnection) myurl.openConnection();
 

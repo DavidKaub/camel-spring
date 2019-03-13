@@ -30,12 +30,14 @@ public class EmailHandler extends NetworkHandler {
         sudokuBox.setNetworkHandler(this);
         establishConnectionToManager();
         this.emailAdressReceiver = emailAdressReceiver;
+        System.out.println("initialized email handler");
     }
 
     @Override
     public void run() {
         if(!initialized){
             sudokuBox.init();
+            System.out.println("started email handler service");
             this.initialized = true;
         }
         try {

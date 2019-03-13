@@ -71,9 +71,12 @@ public class MqttToMailRoute extends RouteBuilder {
         System.out.println("configure !");
 
         String smtpString = "smtp" + (this.ssl ? 's' : "") + "://"+smtpServer+":"+smtpPort+"?username=" + smtpUsername+"&password=" + password +"&to="+receiverEmailAdress+ (this.debug ? "&debugMode=true" : "");
-        System.out.println(smtpString);
+        //System.out.println(smtpString);
 
-        from("mqtt:bar?host=tcp://" + this.mqttUrl + ":" + this.mqttPort + "&subscribeTopicNames=sudoku/+")
+        String mqtt = "mqtt:bar?host=tcp://" + this.mqttUrl + ":" + this.mqttPort + "&subscribeTopicNames=sudoku/+";
+        System.out.println(mqtt);
+
+        from(mqtt)
                 .process(new ProcessorMqttToEmail(boxNameForMqtt,boxName,mqttUrl,mqttPort, emailHandler,this))
                 .to(smtpString);
     }
