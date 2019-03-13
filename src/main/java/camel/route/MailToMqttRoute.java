@@ -39,9 +39,6 @@ public class MailToMqttRoute extends RouteBuilder{
 
     @Override
         public void configure() throws Exception {
-        // from("imaps://imap.gmail.com:993?username=sudokusolver2019&password=#sudokuSolver2019&delay=5")//"file:C:/inputFolder?move=./done"
-        //from("imap://localhost:143?username=email2&password=apfelmusmann")//"file:C:/inputFolder?move=./done"
-        //from("imap://192.168.178.42:143?username=email1&password=apfelmusmann&delay=5")//"file:C:/inputFolder?move=./done"
 
 
         String imapString = "imap" + (this.ssl ? 's' : "") + "://"+imapServer+":"+imapPort+"?username="+imapUsername+"&password="+password+"&delay="+delay+ (this.debug ? "&debugMode=true" : "");
