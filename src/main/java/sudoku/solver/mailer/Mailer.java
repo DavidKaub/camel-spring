@@ -30,41 +30,29 @@ public class Mailer {
     //We are using relay.jangosmtp.net for sending emails
     private String smtphost;
 
-    public void testMailer() {
-        final Mailer mailer = new Mailer();
-        mailer.sendGmail("http:/<SpringBoxManager>/api/initialize");
-        mailer.sendGmail("http:/<SpringBoxManager>/api/ready?box=<sudoku/box_a1");
-        mailer.sendGmail("{\"box\":\"sudoku/box_a1\",\"result\":[2,3,1,4,7,6,9,8,5]}");
-//        try {
-//            TimeUnit.SECONDS.sleep(20);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-        mailer.receive("sudokusolver2019@gmail.com", "#sudokuSolver2019");
-    }
 
-    public List<String> receive(String receiver, String password) {
-        final String email_id = receiver;
-        final String sPassword = password;
+    public List<String> receive(String receiver, String password, String protocol, String host, String port) {
+
 
         //set properties
         Properties properties = new Properties();
-        //You can use imap or imaps , *s -Secured
-        properties.put("mail.store.protocol", "imaps");
+        //You can use imap or imap , *s -Secured
+        properties.put("mail.store.protocol", protocol);
         //Host Address of Your Mail
-        properties.put("mail.imaps.host", "imap.gmail.com");
+        properties.put("mail.imap.host", host);
         //Port number of your Mail Host
-        properties.put("mail.imaps.port", "993");
+        properties.put("mail.imap.port", port);
         //properties.put("mail.imaps.timeout", "10000");
 
         try {
             //create a session
             Session session = Session.getDefaultInstance(properties, null);
             //SET the store for IMAPS
-            Store store = session.getStore("imaps");
+            Store store = session.getStore(protocol);
             System.out.println("Connection initiated");
             //Trying to connect IMAP server
-            store.connect(email_id, sPassword);
+            System.out.println(receiver+ " / "+ password);
+            store.connect(receiver, password);
             System.out.println("Connection is ready");
 
             //Get inbox folder
@@ -137,11 +125,7 @@ public class Mailer {
         return null;
     }
 
-    public void sendGmail(String message) {
-        sendGmail(message, "From Box To MQTT");
-    }
-
-    public void sendGmail(String message, String subject) {
+    public void sendMail(String message, String subject,String sender, String senderUserName, String receiver, String password, String protocol, String host, String port) {
         /*        //mail to own mailserver
         mailer.setDestmailid("email1@localhost");
         mailer.setSendrmailid("email1@localhost");
@@ -157,12 +141,12 @@ public class Mailer {
         propvls.put("mail.smtp.port", "587");*/
 
         //mail to gmail
-        setDestmailid("sudokusolver2019@gmail.com");
-        setSendrmailid("sudokusolver2019@gmail.com");
-        setUname("sudokusolver2019");
-        setPwd("#sudokuSolver2019");
+        setDestmailid(receiver);
+        setSendrmailid(sender);
+        setUname(senderUserName);
+        setPwd(password);
         //mailer.setSmtphost("136.199.13.190");
-        setSmtphost("smtp.googlemail.com");
+        setSmtphost(host);
 
         //Set properties and their values
         Properties propvls = new Properties();
@@ -170,7 +154,7 @@ public class Mailer {
         //propvls.put("mail.smtp.ssl.trust", "*");
         propvls.put("mail.smtp.starttls.enable", "true");
         propvls.put("mail.smtp.host", smtphost);
-        propvls.put("mail.smtp.port", "587");
+        propvls.put("mail.smtp.port", port);
 
         //Create a Session object & authenticate uid and pwd
         Session sessionobj = Session.getInstance(propvls,
@@ -194,6 +178,7 @@ public class Mailer {
             throw new RuntimeException(exp);
         }
     }
+
 
     private void printAllMessages(Message[] msgs) throws Exception
     {

@@ -28,5 +28,8 @@ public class EmailBox extends SudokuBox{
     }
 
 
-
+    @Override
+    void receiveKnowledge(String message) {
+        receiveUnsprecifiedKnowledge(message,false);
+    }
 }

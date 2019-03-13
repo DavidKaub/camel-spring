@@ -4,7 +4,7 @@ package sudoku.solver.mailer;
 public class MailManager {
     public void test(String[] args) {
         Mailer mailer = new Mailer();
-        mailer.testMailer();
+        //mailer.testMailer();
         //mailer.send("subject", "message"); sends subject & message from our own mailServer email1 to our own mailServer email1
         //mailer.send("subject", "message", "sth@gmail.com", "password", "server", "host"); send subject & message from sth@gmail.com to itself using the given password
     }

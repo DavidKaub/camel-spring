@@ -11,8 +11,11 @@ public class EmailHandler extends NetworkHandler {
     private int smptPort;
     private String smtpUsername;
     private String password;
+    private boolean sslEnabled;
+    private String emailAdressReceiver;
+    private boolean initialized = false;
 
-    public EmailHandler(EmailBox sudokuBox, String emailAdress, String imapServer, int imapPort, String imapUsername, String smtpServer, int smptPort, String smtpUserName, String password){
+    public EmailHandler(EmailBox sudokuBox, String emailAdress, String imapServer, int imapPort, String imapUsername, String smtpServer, int smptPort, String smtpUserName, String password, boolean sslEnabled, String emailAdressReceiver){
         super(sudokuBox);
         this.emailAdress = emailAdress;
         this.imapServer = imapServer;
@@ -22,13 +25,18 @@ public class EmailHandler extends NetworkHandler {
         this.smptPort = smptPort;
         this.smtpUsername = smtpUserName;
         this.password = password;
+        this.sslEnabled = sslEnabled;
         sudokuBox.setNetworkHandler(this);
-        sudokuBox.init();
         establishConnectionToManager();
+        this.emailAdressReceiver = emailAdressReceiver;
     }
 
     @Override
     public void run() {
+        if(!initialized){
+            sudokuBox.init();
+            this.initialized = true;
+        }
         try {
             Thread.sleep(400);
         } catch (InterruptedException e) {
@@ -37,13 +45,8 @@ public class EmailHandler extends NetworkHandler {
         while (true) {
             readEmailsFromServer();
             //gibt der box neues wissen & damit reagiert die box, solving darauf
-            establishConnectionToManager();
-            sendUpdate();
-            sendIsSolved();
-
-            readEmailsFromServer();
             //TODO: only commented for test purpuses
-            //messageProcessing();
+            messageProcessing();
 
             /**
              * ORIGINAL VERSION!
@@ -77,7 +80,7 @@ public class EmailHandler extends NetworkHandler {
                  * 2. Read emails.....
                  */
                 sudoku.solver.mailer.Mailer mailer = new sudoku.solver.mailer.Mailer();
-                List<String> contents = mailer.receive(emailAdress, password);
+                List<String> contents = mailer.receive(emailAdress, password,(this.sslEnabled ? "imaps" : "imap"),imapServer,imapPort+"");
                 if(contents != null)
                 {
                     for (String content :
@@ -110,13 +113,7 @@ public class EmailHandler extends NetworkHandler {
 
     @Override
     void establishConnectionToManager() {
-        /**
-         * //TODO optinal!
-         *Wenn die Box fertig initialisiert ist, teilt sie dies dem BoxManager über mit
-         * -> camel ruft dann "http://<SpringBoxManager>/api/ready?box=<sudoku/box_a1>" mit dem korrekten BoxNamen auf
-         */
-        sudoku.solver.mailer.Mailer mailer = new sudoku.solver.mailer.Mailer();
-        mailer.sendGmail("http:/<SpringBoxManager>/api/ready?box=<sudoku/box_" + sudokuBox.boxName + ">", "From Box To SpringBoxManager");
+       //macht nix!
     }
 
     @Override
@@ -144,7 +141,8 @@ public class EmailHandler extends NetworkHandler {
         }
         //send result-Message via Mail
         sudoku.solver.mailer.Mailer mailer = new sudoku.solver.mailer.Mailer();
-        mailer.sendGmail("{\"box\":\"sudoku/box_" + sudokuBox.boxName + "\",\"result\":["+ sb.toString() + "]}");
+        String resultMessage = "{\"box\":\"sudoku/box_" + sudokuBox.boxName + "\",\"result\":["+ sb.toString() + "]}";
+        mailer.sendMail(resultMessage,"subject",emailAdress,smtpUsername,emailAdressReceiver,password,(sslEnabled ? "smtps":"smtp"),smtpServer,smptPort+"");
 
         /**
          * Ergebnisnachricht an den Manager
@@ -166,36 +164,11 @@ public class EmailHandler extends NetworkHandler {
         sentSolvedMessage = true;
     }
 
-    void sendUpdate() {
-        //TODO
-        //send the Update message to MQTT (here via email!)
-        //an der stelle könnte man auch einfach nur bei den ausgehenden nachrichten outgoingMessages einen zusätzlichne string hinzufügen,
 
-
-        /* the message's format
-        {
-        "box" : "sudoku/box_a1";
-        "r_column" : 0,
-        "r_row" : 1,
-        "value" : 4
-        }
-         */
-
-        //send result-Message via Mail
-        sudoku.solver.mailer.Mailer mailer = new sudoku.solver.mailer.Mailer();
-        int columnNumber = 0;
-        int rowNumber = 1;
-        mailer.sendGmail("{\"box\":\"sudoku/box_" + sudokuBox.boxName + "\","
-                + "\"r_column\":" + columnNumber + ","
-                + "\"r_row\":" + rowNumber + ","
-                + "\"value\":" + "CELLVALUE" + "}", "From Box To MQTT");
-
-        //the solution against endless loop?
-        sentSolvedMessage = true;
-    }
 
     @Override
     void sendPendingMessages() {
+        sudoku.solver.mailer.Mailer mailer = new sudoku.solver.mailer.Mailer();
         boolean done = false;
         int tryNo = 0;
         //1. TODO establish connection to email server:
@@ -206,13 +179,13 @@ public class EmailHandler extends NetworkHandler {
                 // Got the lock
                 try {
                     for (String message : outgoingMessages) {
-                        //2. TODO send each Message as different email!(String message as email body!)
+                        //2. send each Message as different email!(String message as email body!)
                         // Subject is practically irrelevant? No receiver needed due to mqtt
                         // -> receiver could be added to subject (to simulate email application)
                         //TODO the camel instance needs to translate this message to a json string!
-
                         for (String neighborName : sudokuBox.getNeighborNames()) {
                             //optional Send email for each neighbor! (add neighbor name to email subject)
+                            mailer.sendMail(message,neighborName,emailAdress,smtpUsername,emailAdressReceiver,password,(sslEnabled ? "smtps":"smtp"),smtpServer,smptPort+"");
                         }
                     }
                     outgoingMessages.clear();

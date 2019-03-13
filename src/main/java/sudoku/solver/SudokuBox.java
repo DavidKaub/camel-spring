@@ -135,8 +135,7 @@ abstract class SudokuBox {
             }
         }
     }
-
-    public void receiveKnowledge(String message) {
+    protected void receiveUnsprecifiedKnowledge(String message, boolean resent) {
         if (isSolved) {
             return;
         }
@@ -145,16 +144,18 @@ abstract class SudokuBox {
             //then the message has relative information and has to be converted
             if (CellChecker.checkRelativeKnwoledge(message)) {
                 message = convertRelativeToAbsoluteKnowledge(message);
-                receiveAbsoluteKnowledge(message);
+                receiveAbsoluteKnowledge(message, resent);
             } else {
                 throw new IllegalArgumentException("Invalid Message received");
             }
         } else {
-            receiveAbsoluteKnowledge(message);
+            receiveAbsoluteKnowledge(message, resent);
         }
     }
 
-    private void receiveAbsoluteKnowledge(String message) {
+    abstract void receiveKnowledge(String message);
+
+    private void receiveAbsoluteKnowledge(String message, boolean resent) {
         if (isSolved) {
             return;
         }
@@ -202,16 +203,36 @@ abstract class SudokuBox {
             /**
              * Send to all neighbors and safe as already sent!
              */
-            sendNewKnowledgeToNeighbors(message);
+            if(resent){
+                sendNewKnowledgeToNeighbors(message);
+            }
         }
     }
 
     private String convertRelativeToAbsoluteKnowledge(String knowledge) {
-        throw new IllegalArgumentException("not implemented yet!");
-        /**
-         * TODO !!!
-         */
-        //return knowledge;
+        StringBuilder absoluteKnowledgeStringBuilder = new StringBuilder();
+        //beispiel relative wissen:  BOX_D4,0,1:7
+
+        char boxColumn = knowledge.charAt(4);
+        boxColumn = Character.toUpperCase(boxColumn);
+        int row = Integer.parseInt(""+knowledge.charAt(5));
+        int ofsetCol = Integer.parseInt(""+knowledge.charAt(7));
+        int ofsetRow = Integer.parseInt(""+knowledge.charAt(9));
+        int value = Integer.parseInt(""+knowledge.charAt(11));
+
+        int valueOfColumnChar = Character.valueOf(boxColumn);
+        valueOfColumnChar += ofsetCol;
+        boxColumn = (char) valueOfColumnChar;
+        row += ofsetRow;
+
+
+        //absolute knowledge example : D5:7
+        absoluteKnowledgeStringBuilder.append(boxColumn);
+        absoluteKnowledgeStringBuilder.append(row);
+        absoluteKnowledgeStringBuilder.append(":");
+        absoluteKnowledgeStringBuilder.append(value);
+
+        return absoluteKnowledgeStringBuilder.toString();
     }
 
     private boolean checkIfRowIsWithinBounderies(int row) {

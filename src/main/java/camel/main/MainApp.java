@@ -1,6 +1,6 @@
 package camel.main;
-import camel.route.ReceiveMailRoute;
-import camel.route.SendMailRoute;
+import camel.route.MailToMqttRoute;
+import camel.route.MqttToMailRoute;
 import org.apache.camel.main.Main;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -27,24 +27,32 @@ public class MainApp {
     private static String mqttPrefix;
 
 
-    private static boolean ssl = true;
+    private static boolean emailSslEnabled = false;
     private static int emailPollingDelay = 10;
-    private static boolean debug = false;
+    private static boolean emailDebugEnabled = false;
+    private static String emailAdressMqttToBox = "email1@localhost";
+    private static String emailAdressBoxToMqtt = "email2@localhost";
+    private static String imapServer = "192.168.178.42";
+    //private static String imapServer = "imap.gmail.com";
+    private static int imapPort = 143;
+    //private static int imapPort = 993;
+    private static String imapUsernameMqttToBox = "email1";
+    private static String imapUsernameBoxToMqtt = "email2";
+    private static String smtpServer = "192.168.178.42";
+    //private static String smtpServer = "smtp.gmail.com";
+    private static int smptPort = 587;
 
-    private static String emailAdress = "sudokusolver2019@gmail.com";
-    private static String imapServer = "imap.gmail.com";
-    private static int imapPort = 993;
-    private static String imapUsername = "sudokusolver2019";
-    private static String smtpServer = "smtp.gmail.com";
-    private static int smptPort = 465;
-    private static String smtpUsername = "sudokusolver2019@gmail.com";
-    private static String password = "#sudokuSolver2019";
+    //private static int smptPort = 465;
+    private static String smtpUsernameMqttToBox = "email1@localhost";
+    private static String smtpUsernameBoxToMqtt = "email2@localhost";
+    private static String emailPasswordMqttToBox = "apfelmusmann";
+    private static String emailPasswordBoxToMqtt = "apfelmusmann";
 
     public static void main(String[] args) {
         System.out.println("\n - programm start! - \n");
 //BasicConfigurator.configure();
 
-        someCamle();
+
 
         //Mailtest begin
         //sudoku.solver.mailer.Mailer mailer = new sudoku.solver.mailer.Mailer();
@@ -61,8 +69,17 @@ public class MainApp {
          */
         //parseInitialJsonData(sendInitialRequest());
         EmailBox sudokuBox = new EmailBox(boxName,initialValues);
-        EmailHandler emailHandler = new EmailHandler(sudokuBox,emailAdress, imapServer,imapPort,imapUsername,smtpServer,smptPort,smtpUsername,password);
+        EmailHandler emailHandler = new EmailHandler(sudokuBox,emailAdressBoxToMqtt, imapServer,imapPort,imapUsernameBoxToMqtt,smtpServer,smptPort,smtpUsernameBoxToMqtt,emailPasswordBoxToMqtt, emailSslEnabled,emailAdressMqttToBox);
+        //startCamel(emailHandler);
+        //TODO verzögern bis start nachricht erhalten
         emailHandler.start();
+/*
+        try {
+            sendReadyMessageToBoxManager();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        */
 
 
         /**
@@ -77,45 +94,25 @@ public class MainApp {
     }
 
 
-    static void someCamle(){
+    private static void startCamel(EmailHandler emailHandler){
 
         int minutesToRunUntilAutoStop = 10;
         //AbstractApplicationContext sendMailContext = new ClassPathXmlApplicationContext("applicationContext-camel.xml");
         //AbstractApplicationContext receiveMailContext = new ClassPathXmlApplicationContext("applicationContext-receiveEmail.xml");
-        Main receiveMailMain = new Main();
-        Main sendMailMain = new Main();
-        receiveMailMain.addRouteBuilder(new ReceiveMailRoute(boxNameForMqtt,mqttUrl,mqttPort,emailAdress,imapServer,imapPort,ssl,imapUsername,password,emailPollingDelay,debug));
-        sendMailMain.addRouteBuilder(new SendMailRoute(boxName,boxNameForMqtt,mqttUrl,mqttPort,emailAdress,smtpServer,smptPort,ssl,smtpUsername,password,debug, emailAdress));
+        Main mqttToMailMain = new Main();
+        mqttToMailMain.addRouteBuilder(new MqttToMailRoute(boxName,boxNameForMqtt,mqttUrl,mqttPort,emailAdressMqttToBox,smtpServer,smptPort,emailSslEnabled,smtpUsernameMqttToBox,emailPasswordMqttToBox,emailDebugEnabled, emailAdressBoxToMqtt, emailHandler,imapUsernameMqttToBox,imapServer,imapPort, emailPollingDelay));
+
         try {
-            System.out.println("starting receive");
-            receiveMailMain.start();
-            System.out.println("started receive");
-            System.out.println("starting send");
-            sendMailMain.start();
-            System.out.println("started send");
+
+            System.out.println("starting mqttToMail");
+            mqttToMailMain.start();
+            System.out.println("started mqttToMail");
 
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        //sendMailContext.start();
-        //receiveMailContext.start();
         System.out.println("Application context started");
-        try {
-            for(int i = 0; i < minutesToRunUntilAutoStop; i++){
-                System.out.println(minutesToRunUntilAutoStop-i+" minutes to go until camel shuts down");
-                Thread.sleep(60 * 1000);
-            }
-        }
-        catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
-        //TODO close all routes
-        //sendMailContext.stop();
-        //receiveMailMain.stop();
-        //sendMailContext.close();
-        //receiveMailMain.close();
     }
 
 
@@ -139,11 +136,6 @@ public class MainApp {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
-
-
-
         return stringBuilder.toString();
     }
 
@@ -196,22 +188,4 @@ public class MainApp {
         while ((line = in.readLine()) != null) {
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

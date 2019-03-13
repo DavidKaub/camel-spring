@@ -1,13 +1,16 @@
 package camel.route;
 
-import camel.processor.ProcessorToMqtt;
+import camel.processor.ProcessorEmailToMqtt;
 import org.apache.camel.builder.RouteBuilder;
 
-public class ReceiveMailRoute extends RouteBuilder{
+public class MailToMqttRoute extends RouteBuilder{
 
     private String mqttUrl;
     private String mqttPort;
     private String boxNameForMqtt;
+
+
+    private String boxName;
 
     private String emailAdress;
     private String imapServer;
@@ -19,7 +22,7 @@ public class ReceiveMailRoute extends RouteBuilder{
     private boolean debug;
 
 
-    public ReceiveMailRoute(String boxNameForMqtt, String mqttUrl, String mqttPort, String emailAdress, String imapServer, int imapPort, boolean ssl, String imapUsername, String password, int delay, boolean debug) {
+    public MailToMqttRoute(String boxName, String boxNameForMqtt, String mqttUrl, String mqttPort, String emailAdress, String imapServer, int imapPort, boolean ssl, String imapUsername, String password, int delay, boolean debug) {
         this.boxNameForMqtt = boxNameForMqtt;
         this.mqttUrl = mqttUrl;
         this.mqttPort = mqttPort;
@@ -31,6 +34,7 @@ public class ReceiveMailRoute extends RouteBuilder{
         this.password = password;
         this.delay = delay;
         this.debug = debug;
+        this.boxName = boxName;
     }
 
     @Override
@@ -44,7 +48,7 @@ public class ReceiveMailRoute extends RouteBuilder{
         //System.out.println(imapString);
             from(imapString)
                     //processor muss topic setzten
-                    .process(new ProcessorToMqtt())
+                    .process(new ProcessorEmailToMqtt(boxName,boxNameForMqtt))
                     .choice()
                     .when(header("type").isEqualTo("knowledge"))
                     .to("mqtt:bar?host=tcp://" + this.mqttUrl + ":" + this.mqttPort+"&publishTopicName=" + this.boxNameForMqtt)
