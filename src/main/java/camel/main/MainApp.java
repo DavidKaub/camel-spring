@@ -63,7 +63,11 @@ public class MainApp {
          * 2. Initialize Box
          * done!
          */
-        //parseInitialJsonData(sendInitialRequest());
+        System.out.println("prepare");
+        String result = sendInitialRequest();
+        System.out.println("connect completed - now parsing");
+        parseInitialJsonData(result);
+        System.out.println("parsed!");
         EmailBox sudokuBox = new EmailBox(boxName,initialValues);
         EmailHandler emailHandler = new EmailHandler(sudokuBox,emailAdressBoxToMqtt, imapServer,imapPort,imapUsernameBoxToMqtt,smtpServer,smptPort,smtpUsernameBoxToMqtt,emailPasswordBoxToMqtt, emailSslEnabled,emailAdressMqttToBox);
         //startCamel(emailHandler);
@@ -158,11 +162,13 @@ public class MainApp {
 
 
     private static String sendInitialRequest()  {
+        System.out.println("send initial request");
         URL myUrl = null;
         HttpURLConnection httpURLConnection = null;
         StringBuilder stringBuilder = new StringBuilder();
         try {
             myUrl = new URL("http://" + managerURL + ":" + managerPort + "/api/initialize");
+            System.out.println("send request to: "+myUrl.toString());
             httpURLConnection = (HttpURLConnection) myUrl.openConnection();
             httpURLConnection.setRequestMethod("GET");
             BufferedReader bufferedReaderIn = new BufferedReader(new InputStreamReader(httpURLConnection.getInputStream()));
@@ -176,8 +182,12 @@ public class MainApp {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return stringBuilder.toString();
+        String response = stringBuilder.toString();
+        System.out.println("response = "+response);
+        return response;
     }
+
+
 
 
 
