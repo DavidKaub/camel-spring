@@ -140,6 +140,7 @@ abstract class SudokuBox {
         if (isSolved) {
             return;
         }
+        //here it is also possible that incoming messages are: initializeResponse (Values), StartSolving(), end() (MQTT: {"SUDOKU", 42})
         if (message.contains("BOX_")) {
             //then the message has relative information and has to be converted
             if (CellChecker.checkRelativeKnwoledge(message)) {

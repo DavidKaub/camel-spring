@@ -43,7 +43,7 @@ public class SendMailRoute extends RouteBuilder {
         System.out.println(smtpString);
 
         from("mqtt:bar?host=tcp://" + this.mqttUrl + ":" + this.mqttPort + "&subscribeTopicNames=sudoku/+")
-                .process(new ProcessorToEmail())
+                //.process(new ProcessorToEmail())
                 .to(smtpString);
     }
 }

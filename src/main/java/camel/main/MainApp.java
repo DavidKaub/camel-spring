@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import sudoku.solver.EmailBox;
 import sudoku.solver.EmailHandler;
+import sudoku.solver.mailer.Mailer;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -26,7 +27,6 @@ public class MainApp {
     private static String mqttPort;
     private static String mqttPrefix;
 
-
     private static boolean ssl = true;
     private static int emailPollingDelay = 10;
     private static boolean debug = false;
@@ -44,38 +44,64 @@ public class MainApp {
         System.out.println("\n - programm start! - \n");
 //BasicConfigurator.configure();
 
-        someCamle();
+        //someCamle();
 
         //Mailtest begin
         //sudoku.solver.mailer.Mailer mailer = new sudoku.solver.mailer.Mailer();
         //mailer.testMailer();
         //Mailtest end
 
-
-
         /**
          *
-         * 1. Send Message to BoxManager
-         * 2. Initialize Box
+         * 1. Send Message to BoxManager (initialize())
+         * 2. Initialize Box receive initValues per Mail
          * done!
          */
-        //parseInitialJsonData(sendInitialRequest());
+
+        //send Initialize-Message
+        sudoku.solver.Initializer initializer = new sudoku.solver.Initializer();
+        initializer.sendInitialize();
+
+        //send an own-created initialValues-Message
+        initializer.sendInitialValues();
+
+        //programm in a break, sleeping or make the following method-call a demon
+        //receive the own-created initialValues-Message
+        String initValuesAsJSON = initializer.readInitialValuesFromEmailServer(emailAdress,password);
+
+        //process initValueAsJSON
+        parseInitialJsonData(initValuesAsJSON);
+
+        //send ready-Message
+        try{
+            sendReadyMessageToBoxManager();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+        //send own created start-Message
+        initializer.sendStartMessage();
+
+        //programm in a break, sleeping or make the following method-call a demon
+        // receive own created start-Message
+        if(initializer.readInitialValuesFromEmailServer(emailAdress,password).equals("sudoku/start"))
+        {
+            boolean boolStart = true;
+            //the box can start
+        }
+
+        //sendInitialRequest
+        // parseInitialJsonData(sendInitialRequest());
         EmailBox sudokuBox = new EmailBox(boxName,initialValues);
         EmailHandler emailHandler = new EmailHandler(sudokuBox,emailAdress, imapServer,imapPort,imapUsername,smtpServer,smptPort,smtpUsername,password);
         emailHandler.start();
-
 
         /**
          * 3. Start MQTT / Email Routes
          * 4. Send OK TO BoxManager -> done by box via email!
          */
         //TODO create MQTT and Rest to Email route
-
-
-
-
     }
-
 
     static void someCamle(){
 
@@ -93,7 +119,6 @@ public class MainApp {
             System.out.println("starting send");
             sendMailMain.start();
             System.out.println("started send");
-
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -118,8 +143,6 @@ public class MainApp {
         //receiveMailMain.close();
     }
 
-
-
     private static String sendInitialRequest()  {
         URL myUrl = null;
         HttpURLConnection httpURLConnection = null;
@@ -135,28 +158,21 @@ public class MainApp {
                 stringBuilder.append(line);
                 stringBuilder.append(System.lineSeparator());
             }
-
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
-
-
-
         return stringBuilder.toString();
     }
 
-
-
-
-
     private static void parseInitialJsonData(String json) throws JSONException {
         JSONObject obj = new JSONObject(json);
-        mqttUrl = obj.getString("mqtt_ip");
-        mqttPort = ""+ obj.getInt("mqtt_port");
-        mqttPrefix = ""+ obj.getInt("mqtt_prefix");
-        boxNameForMqtt = obj.getString("boxname").trim();
+        /*mqttUrl = obj.getString("mqtt_ip");
+        mqttPort = ""+ obj.getInt("mqtt_port");*/
+        mqttUrl = obj.getString("mqtt-ip");
+        mqttPort = ""+ obj.getInt("mqtt-port");
+        //mqttPrefix = ""+ obj.getInt("mqtt_prefix");
+        //boxNameForMqtt = obj.getString("boxname").trim();
+        boxNameForMqtt = obj.getString("box").trim();
         boxName = "BOX_" + boxNameForMqtt.substring(boxNameForMqtt.length() - 2, boxNameForMqtt.length()).toUpperCase();
         if (obj.has("init")) {
             JSONArray arr = obj.getJSONArray("init");
@@ -180,7 +196,6 @@ public class MainApp {
             initialValues = b.toString();
         }
     }
-
 
     public static void sendReadyMessageToBoxManager() throws IOException {
         URL myurl = new URL("http://" + managerURL + ":" + managerPort + "/api/ready?" + URLEncoder.encode("box=" + boxNameForMqtt, "UTF-8"));

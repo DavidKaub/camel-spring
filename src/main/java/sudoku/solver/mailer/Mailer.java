@@ -73,8 +73,8 @@ public class Mailer {
             inbox.open(Folder.READ_WRITE);
 
             //inbox.open(Folder.READ_WRITE);
-            MimeMultipart message = (MimeMultipart) inbox.getMessage(1).getContent();
-            MimeMultipart message2 = (MimeMultipart) inbox.getMessage(2).getContent();
+/*            MimeMultipart message = (MimeMultipart) inbox.getMessage(1).getContent();
+            MimeMultipart message2 = (MimeMultipart) inbox.getMessage(2).getContent(); */
             //inbox.close(false);
 
             //Display email Details
@@ -85,7 +85,7 @@ public class Mailer {
             fp.add(FetchProfile.Item.ENVELOPE);
             fp.add(FetchProfile.Item.CONTENT_INFO);
             inbox.fetch(messages, fp);
-            List<String> contents = null;
+            List<String> contents = new ArrayList<String>();
             try
             {
                 for (int i = 0; i < messages.length; i++)
@@ -115,7 +115,9 @@ public class Mailer {
 
                     System.out.println("Subject : " + subject);
                     System.out.println("Received Date : " + receivedDate.toString());
-                    contents.add(messages[i].getContent().toString());
+                    if(messages[i] != null){
+                        contents.add(messages[i].getContent().toString());
+                    }
                 }
                 return contents;
             }

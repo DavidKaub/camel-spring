@@ -83,18 +83,17 @@ public class EmailHandler extends NetworkHandler {
                     for (String content :
                             contents) {
                         System.out.println("The Content: " + content);
+                        incomingMessages.add(content);
                     }
                 }
-
                         //mailer.testMailer();
-
                 //Das Hinzufügen kann volgenderMaßen funktionieren
-                boolean dummy = false;
+                /*boolean dummy = false;
                 while(dummy){//solange neue Nachrichten vom server verfügbar sind
                     String body = "INahlt des Email Bodys!";
                     incomingMessages.add(body);
                     System.out.println("Endlosschleife");
-                }
+                }*/
             } finally {
                 // Make sure to unlock so that we don't cause a deadlock
                 lockForIncomingMessages.unlock();
@@ -119,7 +118,6 @@ public class EmailHandler extends NetworkHandler {
         sudoku.solver.mailer.Mailer mailer = new sudoku.solver.mailer.Mailer();
         mailer.sendGmail("http:/<SpringBoxManager>/api/ready?box=<sudoku/box_" + sudokuBox.boxName + ">", "From Box To SpringBoxManager");
     }
-
 
     @Override
     void sendIsSolved() {

@@ -7,8 +7,6 @@ import org.apache.camel.builder.RouteBuilder;
 import java.util.HashMap;
 
 public class SudokuRouteBuilder extends RouteBuilder{
-
-
     private String mqttHost;
     private String boxID;
     private static HashMap<String, String[]> neighbors = new HashMap<String, String[]>() {
@@ -30,7 +28,6 @@ public class SudokuRouteBuilder extends RouteBuilder{
         this.boxID = boxID;
     }
 
-
     public void configure() {
         // ICH WEIß, DASS DIE KEYS NICHT INS ÖFFENTLICHE GIT SOLLTEN! IST MIR ABER EGAL. NACH DEM PROJEKT WERDEN DIE BOTS GELÖSCHT
         System.out.println("Setting up camel-routes");
@@ -49,7 +46,6 @@ public class SudokuRouteBuilder extends RouteBuilder{
                 .bean(MQTTConverter.class)
                 .log("Received fieldConfiguration via MQTT-Topic. Forwarding it to Email.")
                 .to("smtps://smtp.gmail.com:465?username=sudokusolver2019@gmail.com&password=#sudokuSolver2019&to=sudokusolver2019@gmail.com");
-
 
         // Publish new knowledge with own id
         from("imaps://imap.gmail.com:993?username=sudokusolver2019&password=#sudokuSolver2019&delay=5")
@@ -71,6 +67,4 @@ public class SudokuRouteBuilder extends RouteBuilder{
                 })
                 .to("smtps://smtp.gmail.com:465?username=sudokusolver2019@gmail.com&password=#sudokuSolver2019&to=sudokusolver2019@gmail.com");
     }
-
-
 }
